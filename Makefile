@@ -1,4 +1,4 @@
-.PHONY: dev server daemon cli multica build test migrate-up migrate-down sqlc seed clean setup start stop check worktree-env setup-main start-main stop-main check-main setup-worktree start-worktree stop-worktree check-worktree db-up db-down selfhost selfhost-stop
+.PHONY: dev server daemon cli multica build test migrate-up migrate-down sqlc seed clean setup start stop check worktree-env setup-main start-main stop-main check-main setup-worktree start-worktree stop-worktree check-worktree db-up db-down selfhost selfhost-stop deploy deploy-stop deploy-logs deploy-status install-daemon
 
 MAIN_ENV_FILE ?= .env
 WORKTREE_ENV_FILE ?= .env.worktree
@@ -216,6 +216,36 @@ migrate-down:
 
 sqlc:
 	cd server && sqlc generate
+
+# Deployment (Docker + systemd)
+COMPOSE_LOCAL = docker compose -f docker-compose.local.yml
+
+deploy:
+	VERSION=$(VERSION) COMMIT=$(COMMIT) $(COMPOSE_LOCAL) up -d --build
+	@echo "Backend:  http://localhost:$${PORT:-8080}"
+	@echo "Frontend: http://localhost:$${FRONTEND_PORT:-3000}"
+	@echo ""
+	@echo "Start daemon: systemctl --user start multica-daemon"
+
+deploy-stop:
+	$(COMPOSE_LOCAL) down
+	-systemctl --user stop multica-daemon 2>/dev/null || true
+	@echo "Stopped."
+
+deploy-logs:
+	$(COMPOSE_LOCAL) logs -f --tail=50 &
+	journalctl --user -u multica-daemon -f --no-pager &
+	wait
+
+deploy-status:
+	@echo "==> Docker"
+	@$(COMPOSE_LOCAL) ps
+	@echo ""
+	@echo "==> Daemon"
+	@systemctl --user status multica-daemon --no-pager 2>/dev/null || echo "  Not installed (run: bash deploy/install.sh)"
+
+install-daemon:
+	bash deploy/install.sh
 
 # Cleanup
 clean:
