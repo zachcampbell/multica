@@ -23,6 +23,7 @@ import { api } from "@multica/core/api";
 import { useFileUpload } from "@multica/core/hooks/use-file-upload";
 import { ActorAvatar } from "../../../common/actor-avatar";
 import { ProviderLogo } from "../../../runtimes/components/provider-logo";
+import { ModelPicker } from "../model-picker";
 
 type RuntimeFilter = "mine" | "all";
 
@@ -44,6 +45,9 @@ export function SettingsTab({
   const [visibility, setVisibility] = useState<AgentVisibility>(agent.visibility);
   const [maxTasks, setMaxTasks] = useState(agent.max_concurrent_tasks);
   const [selectedRuntimeId, setSelectedRuntimeId] = useState(agent.runtime_id);
+  const [model, setModel] = useState(
+    typeof agent.runtime_config?.model === "string" ? agent.runtime_config.model : ""
+  );
   const [runtimeOpen, setRuntimeOpen] = useState(false);
   const [runtimeFilter, setRuntimeFilter] = useState<RuntimeFilter>("mine");
   const [saving, setSaving] = useState(false);
@@ -85,12 +89,14 @@ export function SettingsTab({
     }
   };
 
+  const currentModel = typeof agent.runtime_config?.model === "string" ? agent.runtime_config.model : "";
   const dirty =
     name !== agent.name ||
     description !== (agent.description ?? "") ||
     visibility !== agent.visibility ||
     maxTasks !== agent.max_concurrent_tasks ||
-    selectedRuntimeId !== agent.runtime_id;
+    selectedRuntimeId !== agent.runtime_id ||
+    model !== currentModel;
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -106,6 +112,7 @@ export function SettingsTab({
         visibility,
         max_concurrent_tasks: maxTasks,
         runtime_id: selectedRuntimeId,
+        runtime_config: model ? { model } : {},
       });
       toast.success("Settings saved");
     } catch {
@@ -282,6 +289,7 @@ export function SettingsTab({
                   key={device.id}
                   onClick={() => {
                     setSelectedRuntimeId(device.id);
+                    setModel("");
                     setRuntimeOpen(false);
                   }}
                   className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
@@ -320,6 +328,12 @@ export function SettingsTab({
           </PopoverContent>
         </Popover>
       </div>
+
+      <ModelPicker
+        runtime={selectedRuntime}
+        value={model}
+        onChange={setModel}
+      />
 
       <Button onClick={handleSave} disabled={!dirty || saving} size="sm">
         {saving ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Save className="h-3.5 w-3.5 mr-1.5" />}

@@ -16,7 +16,7 @@ import (
 // tool use, file editing, and bash execution; Ollama provides the inference.
 type ollamaBackend struct {
 	cfg        Config
-	ollamaHost string // e.g. "http://10.100.15.16:4000"
+	ollamaHost string // e.g. "http://localhost:11434"
 	apiKey     string // proxy API key
 }
 

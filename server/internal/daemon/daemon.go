@@ -188,7 +188,7 @@ func (d *Daemon) providerToRuntimeMap() map[string]string {
 }
 
 func (d *Daemon) registerRuntimesForWorkspace(ctx context.Context, workspaceID string) (*RegisterResponse, error) {
-	var runtimes []map[string]string
+	var runtimes []map[string]any
 	for name, entry := range d.cfg.Agents {
 		version, err := agent.DetectVersion(ctx, entry.Path)
 		if err != nil {
@@ -203,12 +203,19 @@ func (d *Daemon) registerRuntimesForWorkspace(ctx context.Context, workspaceID s
 		if d.cfg.DeviceName != "" {
 			displayName = fmt.Sprintf("%s (%s)", displayName, d.cfg.DeviceName)
 		}
-		runtimes = append(runtimes, map[string]string{
+		rt := map[string]any{
 			"name":    displayName,
 			"type":    name,
 			"version": version,
 			"status":  "online",
-		})
+		}
+		if entry.Model != "" {
+			rt["model"] = entry.Model
+		}
+		if len(entry.Models) > 0 {
+			rt["models"] = entry.Models
+		}
+		runtimes = append(runtimes, rt)
 	}
 	if len(runtimes) == 0 {
 		return nil, fmt.Errorf("no agent runtimes could be registered")
@@ -1045,11 +1052,20 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, taskLo
 		return TaskResult{}, fmt.Errorf("create agent backend: %w", err)
 	}
 
+	// Per-agent model override: check runtime_config from the agent, fall
+	// back to the daemon's default model for this provider.
+	model := entry.Model
+	if task.Agent != nil && task.Agent.RuntimeConfig != nil {
+		if m, ok := task.Agent.RuntimeConfig["model"].(string); ok && m != "" {
+			model = m
+		}
+	}
+
 	reused := task.PriorWorkDir != "" && env.WorkDir == task.PriorWorkDir
 	taskLog.Info("starting agent",
 		"provider", provider,
 		"workdir", env.WorkDir,
-		"model", entry.Model,
+		"model", model,
 		"reused", reused,
 	)
 	if task.PriorSessionID != "" {
@@ -1064,7 +1080,7 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, taskLo
 	}
 	execOpts := agent.ExecOptions{
 		Cwd:             env.WorkDir,
-		Model:           entry.Model,
+		Model:           model,
 		Timeout:         d.cfg.AgentTimeout,
 		ResumeSessionID: task.PriorSessionID,
 		CustomArgs:      customArgs,
