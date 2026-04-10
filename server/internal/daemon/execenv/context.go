@@ -48,8 +48,9 @@ func writeContextFiles(workDir, provider string, ctx TaskContextForEnv) error {
 func resolveSkillsDir(workDir, provider string) (string, error) {
 	var skillsDir string
 	switch provider {
-	case "claude":
+	case "claude", "ollama":
 		// Claude Code natively discovers skills from .claude/skills/ in the workdir.
+		// Ollama backend also uses Claude Code as the agent harness.
 		skillsDir = filepath.Join(workDir, ".claude", "skills")
 	case "opencode":
 		// OpenCode natively discovers skills from .config/opencode/skills/ in the workdir.

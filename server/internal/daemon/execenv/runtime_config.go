@@ -18,7 +18,7 @@ func InjectRuntimeConfig(workDir, provider string, ctx TaskContextForEnv) error 
 	content := buildMetaSkillContent(provider, ctx)
 
 	switch provider {
-	case "claude":
+	case "claude", "ollama":
 		return os.WriteFile(filepath.Join(workDir, "CLAUDE.md"), []byte(content), 0o644)
 	case "codex", "opencode", "openclaw":
 		return os.WriteFile(filepath.Join(workDir, "AGENTS.md"), []byte(content), 0o644)
@@ -133,8 +133,9 @@ func buildMetaSkillContent(provider string, ctx TaskContextForEnv) string {
 	if len(ctx.AgentSkills) > 0 {
 		b.WriteString("## Skills\n\n")
 		switch provider {
-		case "claude":
+		case "claude", "ollama":
 			// Claude discovers skills natively from .claude/skills/ — just list names.
+			// Ollama backend also uses Claude Code as the agent harness.
 			b.WriteString("You have the following skills installed (discovered automatically):\n\n")
 		case "codex", "opencode", "openclaw":
 			// Codex, OpenCode, and OpenClaw discover skills natively from their respective paths — just list names.
