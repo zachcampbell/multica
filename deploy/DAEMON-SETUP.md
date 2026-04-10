@@ -42,7 +42,22 @@ export OPENAI_API_KEY=sk-...
 
 ### Ollama (Local/Proxy — optional)
 
-Only needed if the Multica instance is configured with an Ollama/LiteLLM proxy. The daemon admin will provide the host and API key. No local install needed — it reuses the Claude Code CLI with a proxied inference endpoint.
+Ollama support lets you run free models (kimi-k2.5, devstral, qwen, etc.) through an Ollama or LiteLLM proxy. No local Ollama install needed — it reuses the Claude Code CLI with a proxied inference endpoint.
+
+Your daemon admin will provide the host URL and API key. Set them before starting the daemon:
+
+```bash
+export MULTICA_OLLAMA_HOST=http://your-ollama-proxy:4000
+export MULTICA_OLLAMA_API_KEY=sk-ant-api03-your-key-here
+export MULTICA_OLLAMA_MODEL=kimi-k2.5  # or any model the proxy serves
+```
+
+**Requirements:**
+- Claude Code CLI must be installed (Ollama backend uses it as the agent harness)
+- Your machine must be able to reach the proxy host
+- The proxy must serve an Anthropic-compatible `/v1/messages` endpoint
+
+The daemon auto-detects Ollama when `MULTICA_OLLAMA_HOST` is set and registers it as an additional runtime alongside Claude/Codex.
 
 ## Step 2: Install the Multica CLI
 
