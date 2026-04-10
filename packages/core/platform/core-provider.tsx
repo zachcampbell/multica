@@ -55,10 +55,18 @@ function initCore(
   initialized = true;
 }
 
+// Derive WS URL from the current page origin if not explicitly provided.
+// http://host:port → ws://host:port/ws, https → wss.
+function defaultWsUrl(): string {
+  if (typeof window === "undefined") return "ws://localhost:8080/ws";
+  const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${proto}//${window.location.host}/ws`;
+}
+
 export function CoreProvider({
   children,
   apiBaseUrl = "",
-  wsUrl = "ws://localhost:8080/ws",
+  wsUrl,
   storage = defaultStorage,
   onLogin,
   onLogout,
@@ -72,7 +80,7 @@ export function CoreProvider({
     <QueryProvider>
       <AuthInitializer onLogin={onLogin} onLogout={onLogout} storage={storage}>
         <WSProvider
-          wsUrl={wsUrl}
+          wsUrl={wsUrl || defaultWsUrl()}
           authStore={authStore}
           workspaceStore={workspaceStore}
           storage={storage}
