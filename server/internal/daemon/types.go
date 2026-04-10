@@ -2,8 +2,9 @@ package daemon
 
 // AgentEntry describes a single available agent CLI.
 type AgentEntry struct {
-	Path  string // path to CLI binary
-	Model string // model override (optional)
+	Path   string   // path to CLI binary
+	Model  string   // default model (optional)
+	Models []string // available models (optional, discovered at startup)
 }
 
 // Runtime represents a registered daemon runtime.
@@ -39,10 +40,11 @@ type Task struct {
 
 // AgentData holds agent details returned by the claim endpoint.
 type AgentData struct {
-	ID           string      `json:"id"`
-	Name         string      `json:"name"`
-	Instructions string      `json:"instructions"`
-	Skills       []SkillData `json:"skills"`
+	ID            string         `json:"id"`
+	Name          string         `json:"name"`
+	Instructions  string         `json:"instructions"`
+	Skills        []SkillData    `json:"skills"`
+	RuntimeConfig map[string]any `json:"runtime_config,omitempty"`
 }
 
 // SkillData represents a structured skill for task execution.

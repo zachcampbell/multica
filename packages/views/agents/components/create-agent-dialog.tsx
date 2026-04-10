@@ -25,6 +25,7 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Input } from "@multica/ui/components/ui/input";
 import { Label } from "@multica/ui/components/ui/label";
 import { toast } from "sonner";
+import { ModelPicker } from "./model-picker";
 
 export function CreateAgentDialog({
   runtimes,
@@ -41,6 +42,7 @@ export function CreateAgentDialog({
   const [description, setDescription] = useState("");
   const [selectedRuntimeId, setSelectedRuntimeId] = useState(runtimes[0]?.id ?? "");
   const [visibility, setVisibility] = useState<AgentVisibility>("private");
+  const [model, setModel] = useState("");
   const [creating, setCreating] = useState(false);
   const [runtimeOpen, setRuntimeOpen] = useState(false);
 
@@ -61,6 +63,7 @@ export function CreateAgentDialog({
         description: description.trim(),
         runtime_id: selectedRuntime.id,
         visibility,
+        ...(model ? { runtime_config: { model } } : {}),
       });
       onClose();
     } catch (err) {
@@ -177,6 +180,7 @@ export function CreateAgentDialog({
                     key={device.id}
                     onClick={() => {
                       setSelectedRuntimeId(device.id);
+                      setModel("");
                       setRuntimeOpen(false);
                     }}
                     className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
@@ -205,6 +209,12 @@ export function CreateAgentDialog({
               </PopoverContent>
             </Popover>
           </div>
+
+          <ModelPicker
+            runtime={selectedRuntime}
+            value={model}
+            onChange={setModel}
+          />
         </div>
 
         <DialogFooter>
