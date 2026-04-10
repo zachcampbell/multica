@@ -74,7 +74,31 @@ func (s *EmailService) sendSMTP(to, subject, htmlBody string) error {
 	msg.WriteString(htmlBody)
 
 	addr := s.smtpHost + ":" + s.smtpPort
-	return smtp.SendMail(addr, nil, s.fromEmail, []string{to}, []byte(msg.String()))
+
+	// Use plain SMTP (no STARTTLS requirement) for internal MTAs.
+	c, err := smtp.Dial(addr)
+	if err != nil {
+		return fmt.Errorf("smtp dial: %w", err)
+	}
+	defer c.Close()
+
+	if err := c.Mail(s.fromEmail); err != nil {
+		return fmt.Errorf("smtp mail: %w", err)
+	}
+	if err := c.Rcpt(to); err != nil {
+		return fmt.Errorf("smtp rcpt: %w", err)
+	}
+	w, err := c.Data()
+	if err != nil {
+		return fmt.Errorf("smtp data: %w", err)
+	}
+	if _, err := w.Write([]byte(msg.String())); err != nil {
+		return fmt.Errorf("smtp write: %w", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("smtp close: %w", err)
+	}
+	return c.Quit()
 }
 
 func (s *EmailService) sendResend(to, subject, htmlBody string) error {
