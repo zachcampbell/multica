@@ -26,7 +26,7 @@ type GitHubRelease struct {
 // FetchLatestRelease fetches the latest release tag from the multica GitHub repo.
 func FetchLatestRelease() (*GitHubRelease, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	req, err := http.NewRequest(http.MethodGet, "https://api.github.com/repos/multica-ai/multica/releases/latest", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.github.com/repos/zachcampbell/multica/releases/latest", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func UpdateViaDownload(targetVersion string) (string, error) {
 		ext = "zip"
 	}
 	assetName := fmt.Sprintf("multica_%s_%s.%s", runtime.GOOS, runtime.GOARCH, ext)
-	downloadURL := fmt.Sprintf("https://github.com/multica-ai/multica/releases/download/%s/%s", tag, assetName)
+	downloadURL := fmt.Sprintf("https://github.com/zachcampbell/multica/releases/download/%s/%s", tag, assetName)
 
 	// Download the archive.
 	client := &http.Client{Timeout: 120 * time.Second}
