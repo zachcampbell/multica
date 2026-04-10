@@ -118,10 +118,12 @@ type DaemonRegisterRequest struct {
 	DeviceName  string `json:"device_name"`
 	CLIVersion  string `json:"cli_version"` // multica CLI version
 	Runtimes    []struct {
-		Name    string `json:"name"`
-		Type    string `json:"type"`
-		Version string `json:"version"` // agent CLI version (claude/codex)
-		Status  string `json:"status"`
+		Name    string   `json:"name"`
+		Type    string   `json:"type"`
+		Version string   `json:"version"` // agent CLI version (claude/codex)
+		Status  string   `json:"status"`
+		Model   string   `json:"model,omitempty"`  // default model for this runtime
+		Models  []string `json:"models,omitempty"` // available models (discovered)
 	} `json:"runtimes"`
 }
 
@@ -197,10 +199,17 @@ func (h *Handler) DaemonRegister(w http.ResponseWriter, r *http.Request) {
 		if runtime.Status == "offline" {
 			status = "offline"
 		}
-		metadata, _ := json.Marshal(map[string]any{
+		meta := map[string]any{
 			"version":     runtime.Version,
 			"cli_version": req.CLIVersion,
-		})
+		}
+		if runtime.Model != "" {
+			meta["model"] = runtime.Model
+		}
+		if len(runtime.Models) > 0 {
+			meta["models"] = runtime.Models
+		}
+		metadata, _ := json.Marshal(meta)
 
 		registered, err := h.Queries.UpsertAgentRuntime(r.Context(), db.UpsertAgentRuntimeParams{
 			WorkspaceID: parseUUID(req.WorkspaceID),
@@ -358,16 +367,23 @@ func (h *Handler) ClaimTaskByRuntime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Build response with fresh agent data (name + skills).
+	// Build response with fresh agent data (name + skills + runtime config).
 	resp := taskToResponse(*task)
 	if agent, err := h.Queries.GetAgent(r.Context(), task.AgentID); err == nil {
 		skills := h.TaskService.LoadAgentSkills(r.Context(), task.AgentID)
-		resp.Agent = &TaskAgentData{
+		td := TaskAgentData{
 			ID:           uuidToString(agent.ID),
 			Name:         agent.Name,
 			Instructions: agent.Instructions,
 			Skills:       skills,
 		}
+		if len(agent.RuntimeConfig) > 0 {
+			var rc map[string]any
+			if json.Unmarshal(agent.RuntimeConfig, &rc) == nil && len(rc) > 0 {
+				td.RuntimeConfig = rc
+			}
+		}
+		resp.Agent = &td
 	}
 
 	// Include workspace ID and repos so the daemon can set up worktrees.
