@@ -2,53 +2,87 @@ package service
 
 import (
 	"fmt"
+	"net/smtp"
 	"os"
+	"strings"
 
 	"github.com/resend/resend-go/v2"
 )
 
 type EmailService struct {
-	client    *resend.Client
-	fromEmail string
+	resendClient *resend.Client
+	smtpHost     string // SMTP server hostname
+	smtpPort     string // SMTP port (default: 25)
+	fromEmail    string
 }
 
 func NewEmailService() *EmailService {
-	apiKey := os.Getenv("RESEND_API_KEY")
 	from := os.Getenv("RESEND_FROM_EMAIL")
+	if from == "" {
+		from = os.Getenv("SMTP_FROM")
+	}
 	if from == "" {
 		from = "noreply@multica.ai"
 	}
 
-	var client *resend.Client
-	if apiKey != "" {
-		client = resend.NewClient(apiKey)
+	svc := &EmailService{fromEmail: from}
+
+	// Prefer SMTP if configured, then Resend, then dev stdout.
+	if host := os.Getenv("SMTP_HOST"); host != "" {
+		svc.smtpHost = host
+		svc.smtpPort = os.Getenv("SMTP_PORT")
+		if svc.smtpPort == "" {
+			svc.smtpPort = "25"
+		}
+	} else if apiKey := os.Getenv("RESEND_API_KEY"); apiKey != "" {
+		svc.resendClient = resend.NewClient(apiKey)
 	}
 
-	return &EmailService{
-		client:    client,
-		fromEmail: from,
-	}
+	return svc
 }
 
 func (s *EmailService) SendVerificationCode(to, code string) error {
-	if s.client == nil {
-		fmt.Printf("[DEV] Verification code for %s: %s\n", to, code)
-		return nil
+	html := fmt.Sprintf(
+		`<div style="font-family: sans-serif; max-width: 400px; margin: 0 auto;">
+			<h2>Your verification code</h2>
+			<p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 24px 0;">%s</p>
+			<p>This code expires in 10 minutes.</p>
+			<p style="color: #666; font-size: 14px;">If you didn't request this code, you can safely ignore this email.</p>
+		</div>`, code)
+
+	if s.smtpHost != "" {
+		return s.sendSMTP(to, "Your Multica verification code", html)
 	}
 
-	params := &resend.SendEmailRequest{
+	if s.resendClient != nil {
+		return s.sendResend(to, "Your Multica verification code", html)
+	}
+
+	// Dev fallback
+	fmt.Printf("[DEV] Verification code for %s: %s\n", to, code)
+	return nil
+}
+
+func (s *EmailService) sendSMTP(to, subject, htmlBody string) error {
+	var msg strings.Builder
+	msg.WriteString("From: " + s.fromEmail + "\r\n")
+	msg.WriteString("To: " + to + "\r\n")
+	msg.WriteString("Subject: " + subject + "\r\n")
+	msg.WriteString("MIME-Version: 1.0\r\n")
+	msg.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+	msg.WriteString("\r\n")
+	msg.WriteString(htmlBody)
+
+	addr := s.smtpHost + ":" + s.smtpPort
+	return smtp.SendMail(addr, nil, s.fromEmail, []string{to}, []byte(msg.String()))
+}
+
+func (s *EmailService) sendResend(to, subject, htmlBody string) error {
+	_, err := s.resendClient.Emails.Send(&resend.SendEmailRequest{
 		From:    s.fromEmail,
 		To:      []string{to},
-		Subject: "Your Multica verification code",
-		Html: fmt.Sprintf(
-			`<div style="font-family: sans-serif; max-width: 400px; margin: 0 auto;">
-				<h2>Your verification code</h2>
-				<p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 24px 0;">%s</p>
-				<p>This code expires in 10 minutes.</p>
-				<p style="color: #666; font-size: 14px;">If you didn't request this code, you can safely ignore this email.</p>
-			</div>`, code),
-	}
-
-	_, err := s.client.Emails.Send(params)
+		Subject: subject,
+		Html:    htmlBody,
+	})
 	return err
 }
