@@ -1,11 +1,14 @@
 package daemon
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
@@ -127,10 +130,16 @@ func LoadConfig(overrides Overrides) (Config, error) {
 	if ollamaHost != "" {
 		// Ollama backend reuses the claude CLI — ensure it's available.
 		if _, err := exec.LookPath(claudePath); err == nil {
-			agents["ollama"] = AgentEntry{
+			entry := AgentEntry{
 				Path:  claudePath,
 				Model: envOrDefault("MULTICA_OLLAMA_MODEL", "kimi-k2.5"),
 			}
+			// Discover available models from the proxy.
+			ollamaAPIKey := strings.TrimSpace(os.Getenv("MULTICA_OLLAMA_API_KEY"))
+			if models, err := discoverOllamaModels(ollamaHost, ollamaAPIKey); err == nil && len(models) > 0 {
+				entry.Models = models
+			}
+			agents["ollama"] = entry
 		}
 	}
 
@@ -267,6 +276,50 @@ func LoadConfig(overrides Overrides) (Config, error) {
 		HeartbeatInterval:  heartbeatInterval,
 		AgentTimeout:       agentTimeout,
 	}, nil
+}
+
+// discoverOllamaModels queries the Ollama/LiteLLM proxy for available models.
+// Returns a sorted list of model IDs, or an error if the endpoint is unreachable.
+func discoverOllamaModels(host, apiKey string) ([]string, error) {
+	endpoint := strings.TrimRight(host, "/") + "/v1/models"
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("build ollama models request: %w", err)
+	}
+	if apiKey != "" {
+		// The Anthropic-formatted key (sk-ant-api03-<real-key>) wraps the
+		// proxy's actual key. Strip the "ant-api03-" portion to recover the
+		// original proxy key (e.g. sk-ant-api03-sk-xxx → sk-xxx).
+		key := strings.Replace(apiKey, "ant-api03-", "", 1)
+		req.Header.Set("Authorization", "Bearer "+key)
+	}
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("query ollama models: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("ollama models endpoint returned %d", resp.StatusCode)
+	}
+
+	var body struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("decode ollama models response: %w", err)
+	}
+
+	var models []string
+	for _, m := range body.Data {
+		if m.ID != "" {
+			models = append(models, m.ID)
+		}
+	}
+	sort.Strings(models)
+	return models, nil
 }
 
 // NormalizeServerBaseURL converts a WebSocket or HTTP URL to a base HTTP URL.
