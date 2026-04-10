@@ -1,0 +1,20 @@
+[Unit]
+Description=Multica Agent Daemon
+Documentation=https://github.com/zachcampbell/multica
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/multica/daemon.env
+ExecStart=%h/.local/bin/multica daemon start --foreground
+Restart=on-failure
+RestartSec=10
+
+# Logging goes to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=multica-daemon
+
+[Install]
+WantedBy=default.target
