@@ -1030,6 +1030,16 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, taskLo
 			agentEnv[k] = v
 		}
 	}
+	// Ollama/LiteLLM proxy: pass host and API key so the backend can
+	// configure Claude CLI to use the proxy for inference.
+	if provider == "ollama" {
+		if v := os.Getenv("MULTICA_OLLAMA_HOST"); v != "" {
+			agentEnv["OLLAMA_HOST"] = v
+		}
+		if v := os.Getenv("MULTICA_OLLAMA_API_KEY"); v != "" {
+			agentEnv["OLLAMA_API_KEY"] = v
+		}
+	}
 	backend, err := agent.New(provider, agent.Config{
 		ExecutablePath: entry.Path,
 		Env:            agentEnv,
