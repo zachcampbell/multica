@@ -20,6 +20,7 @@ type S3Storage struct {
 	bucket      string
 	cdnDomain   string // if set, returned URLs use this instead of bucket name
 	endpointURL string // if set, use path-style URLs (e.g. MinIO)
+	publicURL   string // if set, use this instead of endpointURL for generated links
 }
 
 // NewS3StorageFromEnv creates an S3Storage from environment variables.
@@ -70,12 +71,15 @@ func NewS3StorageFromEnv() *S3Storage {
 		})
 	}
 
-	slog.Info("S3 storage initialized", "bucket", bucket, "region", region, "cdn_domain", cdnDomain, "endpoint_url", endpointURL)
+	publicURL := os.Getenv("S3_PUBLIC_URL")
+
+	slog.Info("S3 storage initialized", "bucket", bucket, "region", region, "cdn_domain", cdnDomain, "endpoint_url", endpointURL, "public_url", publicURL)
 	return &S3Storage{
 		client:      s3.NewFromConfig(cfg, s3Opts...),
 		bucket:      bucket,
 		cdnDomain:   cdnDomain,
 		endpointURL: endpointURL,
+		publicURL:   publicURL,
 	}
 }
 
@@ -93,6 +97,12 @@ func (s *S3Storage) storageClass() types.StorageClass {
 func (s *S3Storage) KeyFromURL(rawURL string) string {
 	if s.endpointURL != "" {
 		prefix := strings.TrimRight(s.endpointURL, "/") + "/" + s.bucket + "/"
+		if strings.HasPrefix(rawURL, prefix) {
+			return strings.TrimPrefix(rawURL, prefix)
+		}
+	}
+	if s.publicURL != "" {
+		prefix := strings.TrimRight(s.publicURL, "/") + "/" + s.bucket + "/"
 		if strings.HasPrefix(rawURL, prefix) {
 			return strings.TrimPrefix(rawURL, prefix)
 		}
@@ -155,7 +165,11 @@ func (s *S3Storage) Upload(ctx context.Context, key string, data []byte, content
 	}
 
 	if s.endpointURL != "" {
-		link := fmt.Sprintf("%s/%s/%s", strings.TrimRight(s.endpointURL, "/"), s.bucket, key)
+		base := s.endpointURL
+		if s.publicURL != "" {
+			base = s.publicURL
+		}
+		link := fmt.Sprintf("%s/%s/%s", strings.TrimRight(base, "/"), s.bucket, key)
 		return link, nil
 	}
 	domain := s.bucket
