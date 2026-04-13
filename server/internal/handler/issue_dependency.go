@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -51,7 +50,6 @@ func (h *Handler) AddIssueDependency(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	_ = userID // used later for resolveActor
 
 	var req struct {
 		DependsOnIssueID string `json:"depends_on_issue_id"`
@@ -224,15 +222,11 @@ func (h *Handler) ListIssueDependencies(w http.ResponseWriter, r *http.Request) 
 
 	// Look up workspace prefix for identifier formatting.
 	workspaceID := resolveWorkspaceID(r)
-	ws, _ := h.Queries.GetWorkspace(r.Context(), parseUUID(workspaceID))
-	prefix := ws.IssuePrefix
+	prefix := h.getIssuePrefix(r.Context(), parseUUID(workspaceID))
 
 	resp := make([]IssueDependencyResponse, 0, len(rows))
 	for _, row := range rows {
-		identifier := ""
-		if prefix != "" {
-			identifier = prefix + "-" + itoa(row.RelatedIssueNumber)
-		}
+		identifier := formatIdentifier(prefix, row.RelatedIssueNumber)
 		resp = append(resp, IssueDependencyResponse{
 			ID:               uuidToString(row.ID),
 			IssueID:          uuidToString(row.IssueID),
@@ -388,10 +382,3 @@ func (h *Handler) notifyUnblockedDependents(ctx context.Context, issue db.Issue,
 	}
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-func itoa(n int32) string {
-	return fmt.Sprintf("%d", n)
-}
