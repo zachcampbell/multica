@@ -67,6 +67,11 @@ const (
 	EventProjectUpdated = "project:updated"
 	EventProjectDeleted = "project:deleted"
 
+	// Dependency events
+	EventDependencyCreated = "dependency:created"
+	EventDependencyDeleted = "dependency:deleted"
+	EventIssueUnblocked    = "issue:unblocked"
+
 	// Pin events
 	EventPinCreated = "pin:created"
 	EventPinDeleted = "pin:deleted"

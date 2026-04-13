@@ -189,6 +189,8 @@ func NewRouter(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus) chi.Route
 			// Issues
 			r.Route("/api/issues", func(r chi.Router) {
 				r.Get("/search", h.SearchIssues)
+				r.Get("/assignable", h.ListAssignableIssues)
+				r.Get("/dependency-graph", h.GetDependencyGraph)
 				r.Get("/", h.ListIssues)
 				r.Post("/", h.CreateIssue)
 				r.Post("/batch-update", h.BatchUpdateIssues)
@@ -211,6 +213,9 @@ func NewRouter(pool *pgxpool.Pool, hub *realtime.Hub, bus *events.Bus) chi.Route
 					r.Delete("/reactions", h.RemoveIssueReaction)
 					r.Get("/attachments", h.ListAttachments)
 					r.Get("/children", h.ListChildIssues)
+					r.Get("/dependencies", h.ListIssueDependencies)
+					r.Post("/dependencies", h.AddIssueDependency)
+					r.Delete("/dependencies/{depId}", h.RemoveIssueDependency)
 				})
 			})
 
