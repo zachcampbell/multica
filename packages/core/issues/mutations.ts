@@ -9,7 +9,7 @@ import type {
   UpdateIssueRequest,
   ListIssuesResponse,
 } from "../types";
-import type { TimelineEntry, IssueSubscriber, Reaction } from "../types";
+import type { TimelineEntry, IssueSubscriber, Reaction, DependencyDirection } from "../types";
 
 // ---------------------------------------------------------------------------
 // Shared mutation variable types — used by both mutation hooks and
@@ -532,10 +532,11 @@ export function useToggleIssueSubscriber(issueId: string) {
 export function useAddDependency(issueId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ dependsOnIssueId, type }: { dependsOnIssueId: string; type: "blocks" | "blocked_by" | "related" }) =>
+    mutationFn: ({ dependsOnIssueId, type }: { dependsOnIssueId: string; type: DependencyDirection }) =>
       api.addIssueDependency(issueId, dependsOnIssueId, type),
     onSettled: () => {
       qc.invalidateQueries({ queryKey: issueKeys.dependencies(issueId) });
+      qc.invalidateQueries({ queryKey: issueKeys.dependencyGraph() });
     },
   });
 }
@@ -546,6 +547,7 @@ export function useRemoveDependency(issueId: string) {
     mutationFn: (depId: string) => api.removeIssueDependency(issueId, depId),
     onSettled: () => {
       qc.invalidateQueries({ queryKey: issueKeys.dependencies(issueId) });
+      qc.invalidateQueries({ queryKey: issueKeys.dependencyGraph() });
     },
   });
 }

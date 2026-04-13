@@ -58,3 +58,5 @@ server/server
 data/
 .kilo
 .z/
+import-harness-skills.*
+multica-login-test*

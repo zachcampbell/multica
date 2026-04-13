@@ -23,6 +23,7 @@ export const issueKeys = {
   usage: (issueId: string) => ["issues", "usage", issueId] as const,
   dependencies: (issueId: string) =>
     ["issues", "dependencies", issueId] as const,
+  dependencyGraph: () => ["issues", "dependency-graph"] as const,
 };
 
 export type MyIssuesFilter = Pick<ListIssuesParams, "assignee_id" | "assignee_ids" | "creator_id">;

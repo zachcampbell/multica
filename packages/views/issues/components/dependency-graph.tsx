@@ -16,6 +16,7 @@ import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
 import { useNavigation } from "../../navigation";
 import { StatusIcon } from "./status-icon";
+import { issueKeys } from "@multica/core/issues";
 import { api } from "@multica/core/api";
 import type { Issue, IssueStatus } from "@multica/core/types";
 
@@ -127,12 +128,11 @@ function getEdgeStyle(sourceStatus: string, type: string) {
 
 interface DependencyGraphProps {
   issues: Issue[];
-  wsId: string;
 }
 
-export function DependencyGraph({ issues, wsId }: DependencyGraphProps) {
+export function DependencyGraph({ issues }: DependencyGraphProps) {
   const { data: graphData } = useQuery({
-    queryKey: ["issues", "dependency-graph", wsId],
+    queryKey: issueKeys.dependencyGraph(),
     queryFn: () => api.getDependencyGraph(),
   });
 
