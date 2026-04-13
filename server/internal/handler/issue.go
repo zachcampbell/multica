@@ -1138,6 +1138,12 @@ func (h *Handler) UpdateIssue(w http.ResponseWriter, r *http.Request) {
 		h.TaskService.CancelTasksForIssue(r.Context(), issue.ID)
 	}
 
+	// When an issue moves to a terminal status, check if any dependents
+	// are now unblocked and notify via WebSocket.
+	if statusChanged && (issue.Status == "done" || issue.Status == "cancelled") {
+		h.notifyUnblockedDependents(r.Context(), issue, workspaceID, actorType, actorID)
+	}
+
 	writeJSON(w, http.StatusOK, resp)
 }
 
@@ -1177,11 +1183,24 @@ func (h *Handler) canAssignAgent(ctx context.Context, r *http.Request, agentID, 
 // acts as a parking lot where issues can be pre-assigned without immediately
 // triggering execution. Moving out of backlog is handled separately in
 // UpdateIssue.
+// Blocked issues (unresolved blockers in issue_dependency) are also skipped.
 func (h *Handler) shouldEnqueueAgentTask(ctx context.Context, issue db.Issue) bool {
 	if issue.Status == "backlog" {
 		return false
 	}
-	return h.isAgentAssigneeReady(ctx, issue)
+	if !h.isAgentAssigneeReady(ctx, issue) {
+		return false
+	}
+	blocked, err := h.Queries.HasUnresolvedBlockers(ctx, issue.ID)
+	if err != nil {
+		slog.Error("failed to check blockers for enqueue", "issue_id", uuidToString(issue.ID), "error", err)
+		return true // fail open — let the claim-time check catch it
+	}
+	if blocked {
+		slog.Info("task enqueue skipped: issue has unresolved blockers", "issue_id", uuidToString(issue.ID))
+		return false
+	}
+	return true
 }
 
 // shouldEnqueueOnComment returns true if a member comment on this issue should
