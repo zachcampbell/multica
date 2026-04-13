@@ -50,6 +50,7 @@ import type {
   CreatePinRequest,
   PinnedItemType,
   ReorderPinsRequest,
+  IssueDependency,
 } from "../types";
 import { type Logger, noopLogger } from "../logger";
 import { createRequestId } from "../utils";
@@ -233,6 +234,26 @@ export class ApiClient {
 
   async listChildIssues(id: string): Promise<{ issues: Issue[] }> {
     return this.fetch(`/api/issues/${id}/children`);
+  }
+
+  // Dependencies
+  async listIssueDependencies(issueId: string): Promise<IssueDependency[]> {
+    return this.fetch(`/api/issues/${issueId}/dependencies`);
+  }
+
+  async addIssueDependency(issueId: string, dependsOnIssueId: string, type: "blocks" | "blocked_by" | "related"): Promise<IssueDependency> {
+    return this.fetch(`/api/issues/${issueId}/dependencies`, {
+      method: "POST",
+      body: JSON.stringify({ depends_on_issue_id: dependsOnIssueId, type }),
+    });
+  }
+
+  async removeIssueDependency(issueId: string, depId: string): Promise<void> {
+    await this.fetch(`/api/issues/${issueId}/dependencies/${depId}`, { method: "DELETE" });
+  }
+
+  async getDependencyGraph(): Promise<{ edges: Array<{ id: string; issue_id: string; depends_on_issue_id: string; type: string }> }> {
+    return this.fetch("/api/issues/dependency-graph");
   }
 
   async deleteIssue(id: string): Promise<void> {

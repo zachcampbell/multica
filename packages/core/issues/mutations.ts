@@ -511,3 +511,28 @@ export function useToggleIssueSubscriber(issueId: string) {
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// Dependencies
+// ---------------------------------------------------------------------------
+
+export function useAddDependency(issueId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ dependsOnIssueId, type }: { dependsOnIssueId: string; type: "blocks" | "blocked_by" | "related" }) =>
+      api.addIssueDependency(issueId, dependsOnIssueId, type),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: issueKeys.dependencies(issueId) });
+    },
+  });
+}
+
+export function useRemoveDependency(issueId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (depId: string) => api.removeIssueDependency(issueId, depId),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: issueKeys.dependencies(issueId) });
+    },
+  });
+}

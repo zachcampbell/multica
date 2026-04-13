@@ -20,6 +20,7 @@ import { useIssueSelectionStore } from "@multica/core/issues/stores/selection-st
 import { IssuesHeader } from "./issues-header";
 import { BoardView } from "./board-view";
 import { ListView } from "./list-view";
+import { DependencyGraph } from "./dependency-graph";
 import { BatchActionToolbar } from "./batch-action-toolbar";
 
 export function IssuesPage() {
@@ -158,7 +159,9 @@ export function IssuesPage() {
           </div>
         ) : (
           <div className="flex flex-col flex-1 min-h-0">
-            {viewMode === "board" ? (
+            {viewMode === "graph" ? (
+              <DependencyGraph issues={scopedIssues} wsId={wsId} />
+            ) : viewMode === "board" ? (
               <BoardView
                 issues={issues}
                 allIssues={scopedIssues}

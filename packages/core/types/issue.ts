@@ -20,6 +20,28 @@ export interface IssueReaction {
   created_at: string;
 }
 
+export type DependencyDirection = "blocks" | "blocked_by" | "related";
+
+export interface IssueDependencyIssueInfo {
+  id: string;
+  number: number;
+  identifier: string;
+  title: string;
+  status: IssueStatus;
+  priority: IssuePriority;
+  assignee_type: IssueAssigneeType | null;
+  assignee_id: string | null;
+}
+
+export interface IssueDependency {
+  id: string;
+  issue_id: string;
+  depends_on_issue_id: string;
+  type: "blocks" | "related";
+  direction: DependencyDirection;
+  related_issue?: IssueDependencyIssueInfo;
+}
+
 export interface Issue {
   id: string;
   workspace_id: string;
