@@ -364,7 +364,8 @@ func (h *Handler) GetDependencyGraph(w http.ResponseWriter, r *http.Request) {
 // ---------------------------------------------------------------------------
 
 // notifyUnblockedDependents checks if any issues blocked by the given issue
-// are now fully unblocked (all blockers done/cancelled) and publishes WS events.
+// are now fully unblocked (all blockers done/cancelled), publishes WS events,
+// and enqueues agent tasks for any unblocked agent-assigned issues.
 func (h *Handler) notifyUnblockedDependents(ctx context.Context, issue db.Issue, workspaceID, actorType, actorID string) {
 	unblocked, err := h.Queries.ListDependentsUnblockedByIssue(ctx, issue.ID)
 	if err != nil {
@@ -379,6 +380,28 @@ func (h *Handler) notifyUnblockedDependents(ctx context.Context, issue db.Issue,
 			"unblocked_by":   uuidToString(issue.ID),
 		})
 		slog.Info("issue unblocked", "issue_id", uuidToString(dep.ID), "unblocked_by", uuidToString(issue.ID))
+
+		// If the unblocked issue is assigned to an agent, enqueue a task.
+		if dep.AssigneeType.Valid && dep.AssigneeType.String == "agent" && dep.AssigneeID.Valid {
+			hasPending, err := h.Queries.HasPendingTaskForIssueAndAgent(ctx, db.HasPendingTaskForIssueAndAgentParams{
+				IssueID: dep.ID,
+				AgentID: dep.AssigneeID,
+			})
+			if err != nil || hasPending {
+				continue
+			}
+			depIssue := db.Issue{
+				ID:           dep.ID,
+				AssigneeID:   dep.AssigneeID,
+				AssigneeType: dep.AssigneeType,
+				Priority:     dep.Priority,
+			}
+			if _, err := h.TaskService.EnqueueTaskForIssue(ctx, depIssue); err != nil {
+				slog.Warn("failed to enqueue unblocked agent task", "issue_id", uuidToString(dep.ID), "error", err)
+			} else {
+				slog.Info("enqueued task for unblocked issue", "issue_id", uuidToString(dep.ID), "unblocked_by", uuidToString(issue.ID))
+			}
+		}
 	}
 }
 
