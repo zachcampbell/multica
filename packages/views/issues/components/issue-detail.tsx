@@ -86,6 +86,7 @@ import { pinListOptions } from "@multica/core/pins";
 import { useCreatePin, useDeletePin } from "@multica/core/pins";
 
 import { ProgressRing } from "./progress-ring";
+import { DependencySection } from "./dependency-section";
 
 function shortDate(date: string | null): string {
   if (!date) return "—";
@@ -1397,6 +1398,9 @@ export function IssueDetail({ issueId, onDelete, defaultSidebarOpen = true, layo
               </PropRow>
             </div>}
           </div>
+
+          {/* Dependencies */}
+          <DependencySection issueId={issue.id} wsId={wsId} />
 
           {/* Parent issue */}
           {parentIssue && (

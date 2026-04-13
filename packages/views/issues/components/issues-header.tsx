@@ -10,6 +10,7 @@ import {
   Columns3,
   Filter,
   FolderKanban,
+  GitBranch,
   FolderMinus,
   List,
   SignalHigh,
@@ -718,7 +719,7 @@ export function IssuesHeader({ scopedIssues }: { scopedIssues: Issue[] }) {
               }
             />
             <TooltipContent side="bottom">
-              {viewMode === "board" ? "Board view" : "List view"}
+              {viewMode === "board" ? "Board view" : viewMode === "list" ? "List view" : "Dependency graph"}
             </TooltipContent>
           </Tooltip>
           <DropdownMenuContent align="end" className="w-auto">
@@ -731,6 +732,10 @@ export function IssuesHeader({ scopedIssues }: { scopedIssues: Issue[] }) {
               <DropdownMenuItem onClick={() => act.setViewMode("list")}>
                 <List />
                 List
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => act.setViewMode("graph")}>
+                <GitBranch />
+                Dependencies
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
