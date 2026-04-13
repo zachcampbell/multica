@@ -328,7 +328,9 @@ function CommentCard({
 }: CommentCardProps) {
   const { getActorName } = useActorName();
   const { uploadWithToast } = useFileUpload(api);
-  const [open, setOpen] = useState(true);
+  const contentText = entry.content ?? "";
+  const isAgentLongContent = entry.actor_type === "agent" && (contentText.length > 500 || contentText.split("\n").length > 8);
+  const [open, setOpen] = useState(!isAgentLongContent);
   const [editing, setEditing] = useState(false);
   const editEditorRef = useRef<ContentEditorRef>(null);
   const cancelledRef = useRef(false);
@@ -381,9 +383,8 @@ function CommentCard({
   collectReplies(entry.id);
 
   const replyCount = allNestedReplies.length;
-  const contentPreview = (entry.content ?? "").replace(/\n/g, " ").slice(0, 80);
+  const contentPreview = contentText.replace(/\n/g, " ").slice(0, 80);
   const reactions = entry.reactions ?? [];
-  const contentText = entry.content ?? "";
   const isLongContent = contentText.length > 500 || contentText.split("\n").length > 8;
 
   const isHighlighted = highlightedCommentId === entry.id;
@@ -417,6 +418,7 @@ function CommentCard({
             {!open && contentPreview && (
               <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
                 {contentPreview}
+                {isAgentLongContent && ` (${Math.round(contentText.length / 1000)}k chars)`}
               </span>
             )}
             {!open && replyCount > 0 && (
