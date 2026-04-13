@@ -54,6 +54,7 @@ import type {
   ReorderPinsRequest,
   Invitation,
   IssueDependency,
+  DependencyDirection,
 } from "../types";
 import { type Logger, noopLogger } from "../logger";
 import { createRequestId } from "../utils";
@@ -282,7 +283,7 @@ export class ApiClient {
     return this.fetch(`/api/issues/${issueId}/dependencies`);
   }
 
-  async addIssueDependency(issueId: string, dependsOnIssueId: string, type: "blocks" | "blocked_by" | "related"): Promise<IssueDependency> {
+  async addIssueDependency(issueId: string, dependsOnIssueId: string, type: DependencyDirection): Promise<IssueDependency> {
     return this.fetch(`/api/issues/${issueId}/dependencies`, {
       method: "POST",
       body: JSON.stringify({ depends_on_issue_id: dependsOnIssueId, type }),

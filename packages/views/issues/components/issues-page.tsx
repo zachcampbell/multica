@@ -147,7 +147,7 @@ export function IssuesPage() {
         ) : (
           <div className="flex flex-col flex-1 min-h-0">
             {viewMode === "graph" ? (
-              <DependencyGraph issues={scopedIssues} wsId={wsId} />
+              <DependencyGraph issues={scopedIssues} />
             ) : viewMode === "board" ? (
               <BoardView
                 issues={issues}
