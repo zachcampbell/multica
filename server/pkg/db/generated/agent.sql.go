@@ -117,6 +117,13 @@ WHERE id = (
               OR (atq.chat_session_id IS NOT NULL AND active.chat_session_id = atq.chat_session_id)
             )
       )
+      AND NOT EXISTS (
+          SELECT 1 FROM issue_dependency dep
+          JOIN issue blocker ON blocker.id = dep.issue_id
+          WHERE dep.depends_on_issue_id = atq.issue_id
+            AND dep.type = 'blocks'
+            AND blocker.status NOT IN ('done', 'cancelled')
+      )
     ORDER BY atq.priority DESC, atq.created_at ASC
     LIMIT 1
     FOR UPDATE SKIP LOCKED
@@ -129,6 +136,7 @@ RETURNING id, agent_id, issue_id, status, priority, dispatched_at, started_at, c
 // already dispatched or running. This allows different agents to work on the same
 // issue in parallel while preventing a single agent from running duplicate tasks.
 // Chat tasks (issue_id IS NULL) use chat_session_id for serialization instead.
+// Also skips tasks whose issue has unresolved blockers (dependency enforcement).
 func (q *Queries) ClaimAgentTask(ctx context.Context, agentID pgtype.UUID) (AgentTaskQueue, error) {
 	row := q.db.QueryRow(ctx, claimAgentTask, agentID)
 	var i AgentTaskQueue

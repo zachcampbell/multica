@@ -81,6 +81,7 @@ WHERE id = $1;
 -- already dispatched or running. This allows different agents to work on the same
 -- issue in parallel while preventing a single agent from running duplicate tasks.
 -- Chat tasks (issue_id IS NULL) use chat_session_id for serialization instead.
+-- Also skips tasks whose issue has unresolved blockers (dependency enforcement).
 UPDATE agent_task_queue
 SET status = 'dispatched', dispatched_at = now()
 WHERE id = (
@@ -94,6 +95,13 @@ WHERE id = (
               (atq.issue_id IS NOT NULL AND active.issue_id = atq.issue_id)
               OR (atq.chat_session_id IS NOT NULL AND active.chat_session_id = atq.chat_session_id)
             )
+      )
+      AND NOT EXISTS (
+          SELECT 1 FROM issue_dependency dep
+          JOIN issue blocker ON blocker.id = dep.issue_id
+          WHERE dep.depends_on_issue_id = atq.issue_id
+            AND dep.type = 'blocks'
+            AND blocker.status NOT IN ('done', 'cancelled')
       )
     ORDER BY atq.priority DESC, atq.created_at ASC
     LIMIT 1
