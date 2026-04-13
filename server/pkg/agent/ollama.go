@@ -52,9 +52,9 @@ func (b *ollamaBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 	}
 	env["ANTHROPIC_BASE_URL"] = b.ollamaHost
 	if b.apiKey != "" {
-		env["ANTHROPIC_API_KEY"] = b.apiKey
+		env["ANTHROPIC_AUTH_TOKEN"] = b.apiKey
 	} else {
-		env["ANTHROPIC_API_KEY"] = "ollama"
+		env["ANTHROPIC_AUTH_TOKEN"] = "ollama"
 	}
 	cmd.Env = buildEnv(env)
 
