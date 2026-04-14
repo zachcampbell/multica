@@ -8,7 +8,7 @@ Wants=network-online.target
 Type=simple
 EnvironmentFile=%h/.config/multica/daemon.env
 ExecStart=%h/.local/bin/multica daemon start --foreground
-Restart=on-failure
+Restart=always
 RestartSec=10
 
 # Logging goes to journald

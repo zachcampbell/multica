@@ -21,7 +21,7 @@ export function LandingHero() {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <div className="relative min-h-full overflow-hidden bg-[#05070b] text-white">
+    <div className="relative min-h-full overflow-hidden bg-[#004b87] text-white">
       <LandingBackdrop />
 
       <main className="relative z-10">
@@ -96,7 +96,7 @@ export function LandingHero() {
 }
 
 const INSTALL_COMMAND =
-  "curl -fsSL https://raw.githubusercontent.com/multica-ai/multica/main/scripts/install.sh | bash";
+  "curl -fsSL https://raw.githubusercontent.com/zachcampbell/multica/main/scripts/install.sh | bash";
 
 function InstallCommand() {
   const [copied, setCopied] = useState(false);

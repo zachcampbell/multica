@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MulticaIcon } from "@multica/ui/components/common/multica-icon";
 import { cn } from "@multica/ui/lib/utils";
 import { useAuthStore } from "@multica/core/auth";
-import { XMark, GitHubMark, githubUrl, twitterUrl } from "./shared";
+import { GitHubMark, githubUrl } from "./shared";
 import { useLocale, locales, localeLabels } from "../i18n";
 
 export function LandingFooter() {
@@ -13,7 +13,7 @@ export function LandingFooter() {
   const groups = Object.values(t.footer.groups);
 
   return (
-    <footer className="bg-[#0a0d12] text-white">
+    <footer className="bg-[#002a4d] text-white">
       <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8">
         {/* Top: CTA + link columns */}
         <div className="flex flex-col gap-12 border-b border-white/10 py-16 sm:py-20 lg:flex-row lg:gap-20">
@@ -30,14 +30,6 @@ export function LandingFooter() {
             </p>
             <div className="mt-4 flex items-center gap-3">
               <Link
-                href={twitterUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-white/40 transition-colors hover:text-white"
-              >
-                <XMark className="size-4" />
-              </Link>
-              <Link
                 href={githubUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -49,7 +41,7 @@ export function LandingFooter() {
             <div className="mt-6">
               <Link
                 href={user ? "/issues" : "/login"}
-                className="inline-flex items-center justify-center rounded-[11px] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#0a0d12] transition-colors hover:bg-white/88"
+                className="inline-flex items-center justify-center rounded-[11px] bg-[#ed8b00] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#d47d00]"
               >
                 {user ? t.header.dashboard : t.footer.cta}
               </Link>

@@ -1,7 +1,6 @@
 import { cn } from "@multica/ui/lib/utils";
 
-export const githubUrl = "https://github.com/multica-ai/multica";
-export const twitterUrl = "https://x.com/MulticaAI";
+export const githubUrl = "https://github.com/zachcampbell/multica";
 
 export function GitHubMark({ className }: { className?: string }) {
   return (
@@ -183,7 +182,7 @@ export function heroButtonClassName(tone: "ghost" | "solid") {
   return cn(
     "inline-flex items-center justify-center gap-2 rounded-[12px] px-5 py-3 text-[14px] font-semibold transition-colors",
     tone === "solid"
-      ? "bg-white text-[#0a0d12] hover:bg-white/92"
+      ? "bg-[#ed8b00] text-white hover:bg-[#d47d00]"
       : "border border-white/18 bg-black/16 text-white backdrop-blur-sm hover:bg-black/24",
   );
 }

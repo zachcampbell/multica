@@ -3,19 +3,10 @@ import { MulticaLanding } from "@/features/landing/components/multica-landing";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Multica — Project Management for Human + Agent Teams",
+    absolute: "Multica — Extended Fork",
   },
   description:
-    "Open-source platform that turns coding agents into real teammates. Assign tasks, track progress, compound skills.",
-  openGraph: {
-    title: "Multica — Project Management for Human + Agent Teams",
-    description:
-      "Manage your human + agent workforce in one place.",
-    url: "/",
-  },
-  alternates: {
-    canonical: "/",
-  },
+    "Multica fork with Ollama backend, issue dependency graphs, per-agent model selection, and self-hosted deployment tooling.",
 };
 
 export default function LandingPage() {

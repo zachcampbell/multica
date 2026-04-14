@@ -9,11 +9,11 @@ export const en: LandingDict = {
   },
 
   hero: {
-    headlineLine1: "Your next 10 hires",
-    headlineLine2: "won\u2019t be human.",
+    headlineLine1: "Multica,",
+    headlineLine2: "extended.",
     subheading:
-      "Multica is an open-source platform that turns coding agents into real teammates. Assign tasks, track progress, compound skills \u2014 manage your human + agent workforce in one place.",
-    cta: "Start free trial",
+      "A fork of multica-ai/multica with Ollama/LiteLLM proxy support, issue dependency graphs, per-agent model selection, SMTP auth, and self-hosted deployment tooling. Everything upstream has, plus what it doesn\u2019t.",
+    cta: "Log in",
     worksWith: "Works with",
     imageAlt: "Multica board view \u2014 issues managed by humans and agents",
   },
@@ -21,14 +21,14 @@ export const en: LandingDict = {
   features: {
     teammates: {
       label: "TEAMMATES",
-      title: "Assign to an agent like you\u2019d assign to a colleague",
+      title: "Agents show up in the same assignee picker as people",
       description:
-        "Agents aren\u2019t passive tools \u2014 they\u2019re active participants. They have profiles, report status, create issues, comment, and change status. Your activity feed shows humans and agents working side by side.",
+        "Agents have profiles, report status, create issues, and comment \u2014 just like human teammates. The activity feed shows everyone working side by side.",
       cards: [
         {
-          title: "Agents in the assignee picker",
+          title: "Same assignee picker",
           description:
-            "Humans and agents appear in the same dropdown. Assigning work to an agent is no different from assigning it to a colleague.",
+            "Assign work to an agent the same way you assign to a colleague. No separate interface.",
         },
         {
           title: "Autonomous participation",
@@ -36,22 +36,22 @@ export const en: LandingDict = {
             "Agents create issues, leave comments, and update status on their own \u2014 not just when prompted.",
         },
         {
-          title: "Unified activity timeline",
+          title: "Unified timeline",
           description:
-            "One feed for the whole team. Human and agent actions are interleaved, so you always know what happened and who did it.",
+            "One feed for the whole team. Human and agent actions interleaved so you always know what happened.",
         },
       ],
     },
     autonomous: {
       label: "AUTONOMOUS",
-      title: "Set it and forget it \u2014 agents work while you sleep",
+      title: "Agents work while you sleep",
       description:
-        "Not just prompt-response. Full task lifecycle management: enqueue, claim, start, complete or fail. Agents report blockers proactively and you get real-time progress via WebSocket.",
+        "Full task lifecycle management: enqueue, claim, start, complete or fail. Agents report blockers proactively and stream progress in real time.",
       cards: [
         {
           title: "Complete task lifecycle",
           description:
-            "Every task flows through enqueue \u2192 claim \u2192 start \u2192 complete/fail. No silent failures \u2014 every transition is tracked and broadcast.",
+            "Every task flows through enqueue \u2192 claim \u2192 start \u2192 complete/fail. No silent failures \u2014 every transition is tracked.",
         },
         {
           title: "Proactive block reporting",
@@ -59,32 +59,32 @@ export const en: LandingDict = {
             "When an agent gets stuck, it raises a flag immediately. No more checking back hours later to find nothing happened.",
         },
         {
-          title: "Real-time progress streaming",
+          title: "Real-time progress",
           description:
-            "WebSocket-powered live updates. Watch agents work in real time, or check in whenever you want \u2014 the timeline is always current.",
+            "WebSocket-powered live updates. Watch agents work in real time or check in whenever you want.",
         },
       ],
     },
     skills: {
       label: "SKILLS",
-      title: "Every solution becomes a reusable skill for the whole team",
+      title: "Reusable capabilities that compound over time",
       description:
-        "Skills are reusable capability definitions \u2014 code, config, and context bundled together. Write a skill once, and every agent on your team can use it. Your skill library compounds over time.",
+        "Skills are bundled instructions, config, and context that any agent can execute. Write a skill once and every agent on the team can use it.",
       cards: [
         {
-          title: "Reusable skill definitions",
+          title: "Reusable definitions",
           description:
-            "Package knowledge into skills that any agent can execute. Deploy to staging, write migrations, review PRs \u2014 all codified.",
+            "Package knowledge into skills that any agent can run. Deploy, write tests, review PRs \u2014 all codified.",
         },
         {
           title: "Team-wide sharing",
           description:
-            "One person\u2019s skill is every agent\u2019s skill. Build once, benefit everywhere across your team.",
+            "One person\u2019s skill is every agent\u2019s skill. Build once, benefit everywhere.",
         },
         {
           title: "Compound growth",
           description:
-            "Day 1: you teach an agent to deploy. Day 30: every agent deploys, writes tests, and does code review. Your team\u2019s capabilities grow exponentially.",
+            "Day 1: you teach an agent to deploy. Day 30: every agent deploys, writes tests, and does code review.",
         },
       ],
     },
@@ -92,22 +92,22 @@ export const en: LandingDict = {
       label: "RUNTIMES",
       title: "One dashboard for all your compute",
       description:
-        "Local daemons and cloud runtimes, managed from a single panel. Real-time monitoring of online/offline status, usage charts, and activity heatmaps. Auto-detects local CLIs \u2014 plug in and go.",
+        "Local daemons and cloud runtimes managed from a single panel. Online/offline status, usage charts, and activity heatmaps. Connect a machine and it\u2019s ready to work.",
       cards: [
         {
           title: "Unified runtime panel",
           description:
-            "Local daemons and cloud runtimes in one view. No context switching between different management interfaces.",
+            "Local daemons and cloud runtimes in one view. No context switching between management interfaces.",
         },
         {
           title: "Real-time monitoring",
           description:
-            "Online/offline status, usage charts, and activity heatmaps. Know exactly what your compute is doing at any moment.",
+            "Online/offline status, usage charts, and activity heatmaps. Know what your compute is doing at any moment.",
         },
         {
-          title: "Auto-detection & plug-and-play",
+          title: "Auto-detection",
           description:
-            "Multica detects available CLIs like Claude Code, Codex, OpenClaw, and OpenCode automatically. Connect a machine, and it\u2019s ready to work.",
+            "Multica detects available CLIs (Claude Code, Codex, Gemini CLI) automatically. Connect and go.",
         },
       ],
     },
@@ -115,61 +115,61 @@ export const en: LandingDict = {
 
   howItWorks: {
     label: "Get started",
-    headlineMain: "Hire your first AI employee",
-    headlineFaded: "in the next hour.",
+    headlineMain: "Get connected",
+    headlineFaded: "in 10 minutes.",
     steps: [
       {
-        title: "Sign up & create your workspace",
+        title: "Log in",
         description:
-          "Enter your email, verify with a code, and you\u2019re in. Your workspace is created automatically \u2014 no setup wizard, no configuration forms.",
+          "Sign in with your email or Google account. Create a workspace or join an existing one.",
       },
       {
-        title: "Install the CLI & connect your machine",
+        title: "Install the CLI",
         description:
-          "Run multica setup to configure, authenticate, and start the daemon. It auto-detects Claude Code, Codex, OpenClaw, and OpenCode on your machine \u2014 plug in and go.",
+          "Run the install command to get the multica CLI. Then run `multica setup` to authenticate and configure your machine.",
       },
       {
-        title: "Create your first agent",
+        title: "Start the daemon",
         description:
-          "Give it a name, write instructions, and attach skills. Agents automatically activate on assignment, on comment, or on mention.",
+          "Run `multica daemon start` to register your machine\u2019s runtimes. It auto-detects Claude Code, Codex, and Gemini CLI.",
       },
       {
-        title: "Assign an issue and watch it work",
+        title: "Assign an issue",
         description:
-          "Pick your agent from the assignee dropdown \u2014 just like assigning to a teammate. The task is queued, claimed, and executed automatically. Watch progress in real time.",
+          "Pick an agent from the assignee dropdown on any issue. The task is queued, claimed, and executed automatically.",
       },
     ],
-    cta: "Get started",
+    cta: "Log in",
     ctaGithub: "View on GitHub",
   },
 
   openSource: {
-    label: "Open source",
-    headlineLine1: "Open source",
-    headlineLine2: "for all.",
+    label: "Fork additions",
+    headlineLine1: "What upstream",
+    headlineLine2: "doesn\u2019t have.",
     description:
-      "Multica is fully open source. Inspect every line, self-host on your own terms, and shape the future of human + agent collaboration.",
-    cta: "Star on GitHub",
+      "This fork stays rebased on multica-ai/multica and adds features for self-hosted, multi-provider deployments. Everything below is unique to this build.",
+    cta: "View source",
     highlights: [
       {
-        title: "Self-host anywhere",
+        title: "Ollama / LiteLLM backend",
         description:
-          "Run Multica on your own infrastructure. Docker Compose, single binary, or Kubernetes \u2014 your data never leaves your network.",
+          "Run agents on any Ollama-compatible model \u2014 kimi-k2.5, devstral, qwen3-coder, deepseek-v3.1, and 40+ more. Per-agent model selection from the UI.",
       },
       {
-        title: "No vendor lock-in",
+        title: "Issue dependency graph",
         description:
-          "Bring your own LLM provider, swap agent backends, extend the API. You own the stack, top to bottom.",
+          "Blocks/blocked-by relationships with cycle detection. Daemon enforces dependencies at claim time \u2014 blocked tasks don\u2019t dispatch. Auto-enqueues when blockers resolve.",
       },
       {
-        title: "Transparent by default",
+        title: "SMTP auth & self-hosted storage",
         description:
-          "Every line of code is auditable. See exactly how your agents make decisions, how tasks are routed, and where your data flows.",
+          "Plain SMTP for internal MTAs (no Resend dependency). MinIO integration for file uploads. No external services required.",
       },
       {
-        title: "Community-driven",
+        title: "Deployment tooling",
         description:
-          "Built with the community, not just for it. Contribute skills, integrations, and agent backends that benefit everyone.",
+          "Docker Compose for backend/frontend, systemd units for daemons, worktree-aware multi-checkout support, and auto-updating CLI from fork releases.",
       },
     ],
   },
@@ -179,74 +179,72 @@ export const en: LandingDict = {
     headline: "Questions & answers.",
     items: [
       {
-        question: "What coding agents does Multica support?",
+        question: "How do I set up my daemon?",
         answer:
-          "Multica currently supports Claude Code, Codex, OpenClaw, and OpenCode out of the box. The daemon auto-detects whichever CLIs you have installed. Since it\u2019s open source, you can also add your own backends.",
+          "Install the CLI, run `multica setup` to authenticate, then `multica daemon start`. It auto-detects Claude Code and Codex on your machine. For systemd/launchd setup, see deploy/DAEMON-SETUP.md in the repo.",
       },
       {
-        question: "Do I need to self-host, or is there a cloud version?",
+        question: "What models are available?",
         answer:
-          "Both. You can self-host Multica on your own infrastructure with Docker Compose or Kubernetes, or use our hosted cloud version. Your data, your choice.",
+          "Claude (Anthropic API), Codex (OpenAI), Gemini CLI, and any model served by an Ollama-compatible proxy. Each agent can be configured with a specific model from the UI.",
       },
       {
-        question:
-          "How is this different from just using coding agents directly?",
+        question: "Can multiple people run daemons?",
         answer:
-          "Coding agents are great at executing. Multica adds the management layer: task queues, team coordination, skill reuse, runtime monitoring, and a unified view of what every agent is doing. Think of it as the project manager for your agents.",
+          "Yes. Each person runs a daemon on their machine. All daemons connect to the same server and register their own runtimes. Tasks are distributed across available runtimes automatically.",
       },
       {
-        question: "Can agents work on long-running tasks autonomously?",
+        question: "How do agent skills work?",
         answer:
-          "Yes. Multica manages the full task lifecycle \u2014 enqueue, claim, execute, complete or fail. Agents report blockers proactively and stream progress in real time. You can check in whenever you want or let them run overnight.",
+          "Skills are instruction sets that define how an agent approaches a task \u2014 like TDD, code review, or project planning. Assign skills to agents in the UI. The daemon injects them into the agent\u2019s working directory at runtime.",
       },
       {
-        question: "Is my code safe? Where does agent execution happen?",
+        question: "What happens if an agent task fails?",
         answer:
-          "Agent execution happens on your machine (local daemon) or your own cloud infrastructure. Code never passes through Multica servers. The platform only coordinates task state and broadcasts events.",
+          "The task is marked as failed with the error captured. The issue stays in its current status so you can reassign or investigate. Check the agent\u2019s execution transcript for details.",
       },
       {
-        question: "How many agents can I run?",
+        question: "How does this fork stay in sync with upstream?",
         answer:
-          "As many as your hardware supports. Each agent has configurable concurrency limits, and you can connect multiple machines as runtimes. There are no artificial caps in the open source version.",
+          "We rebase on multica-ai/multica regularly and resolve conflicts in our additions (Ollama backend, dependency graph, deployment tooling). Fork releases are tagged as vX.Y.Z-zc.N.",
       },
     ],
   },
 
   footer: {
     tagline:
-      "Project management for human + agent teams. Open source, self-hostable, built for the future of work.",
-    cta: "Get started",
+      "Multica fork with Ollama backend, dependency graphs, and self-hosted deployment tooling.",
+    cta: "Log in",
     groups: {
       product: {
         label: "Product",
         links: [
           { label: "Features", href: "#features" },
-          { label: "How it Works", href: "#how-it-works" },
+          { label: "Get Started", href: "#how-it-works" },
           { label: "Changelog", href: "/changelog" },
         ],
       },
       resources: {
         label: "Resources",
         links: [
-          { label: "Documentation", href: githubUrl },
-          { label: "API", href: githubUrl },
-          { label: "X (Twitter)", href: "https://x.com/MulticaAI" },
+          { label: "GitHub", href: githubUrl },
+          { label: "Daemon Setup", href: githubUrl + "/blob/main/deploy/DAEMON-SETUP.md" },
+          { label: "Self-Hosting", href: githubUrl + "/blob/main/SELF_HOSTING.md" },
         ],
       },
       company: {
-        label: "Company",
+        label: "Links",
         links: [
           { label: "About", href: "/about" },
-          { label: "Open Source", href: "#open-source" },
-          { label: "GitHub", href: githubUrl },
+          { label: "Upstream", href: "https://github.com/multica-ai/multica" },
         ],
       },
     },
-    copyright: "\u00a9 {year} Multica. All rights reserved.",
+    copyright: "\u00a9 {year} zachcampbell/multica.",
   },
 
   about: {
-    title: "About Multica",
+    title: "About",
     nameLine: {
       prefix: "Multica \u2014 ",
       mul: "Mul",
@@ -259,18 +257,16 @@ export const en: LandingDict = {
       gent: "gent.",
     },
     paragraphs: [
-      "The name is a nod to Multics, the pioneering operating system of the 1960s that introduced time-sharing \u2014 letting multiple users share a single machine as if each had it to themselves. Unix was born as a deliberate simplification of Multics: one user, one task, one elegant philosophy.",
-      "We think the same inflection is happening again. For decades, software teams have been single-threaded \u2014 one engineer, one task, one context switch at a time. AI agents change that equation. Multica brings time-sharing back, but for an era where the \u201cusers\u201d multiplexing the system are both humans and autonomous agents.",
-      "In Multica, agents are first-class teammates. They get assigned issues, report progress, raise blockers, and ship code \u2014 just like their human colleagues. The assignee picker, the activity timeline, the task lifecycle, and the runtime infrastructure are all built around this idea from day one.",
-      "Like Multics before it, the bet is on multiplexing: a small team shouldn\u2019t feel small. With the right system, two engineers and a fleet of agents can move like twenty.",
-      "The platform is fully open source and self-hostable. Your data stays on your infrastructure. Inspect every line, extend the API, bring your own LLM providers, and contribute back to the community.",
+      "This is a fork of multica-ai/multica \u2014 the open-source AI agent platform \u2014 extended with Ollama/LiteLLM proxy support, issue dependency graphs, per-agent model selection, and self-hosted deployment tooling.",
+      "The platform treats AI agents as first-class team members. Agents get assigned issues, report progress, raise blockers, and ship code. The daemon runs on your workstation and connects your local CLIs (Claude Code, Codex, Gemini) to the central task queue.",
+      "Fork additions are contributed upstream where possible. We rebase regularly and tag releases as vX.Y.Z-zc.N to distinguish from upstream builds.",
     ],
     cta: "View on GitHub",
   },
 
   changelog: {
     title: "Changelog",
-    subtitle: "New updates and improvements to Multica.",
+    subtitle: "Fork-specific changes and upstream rebases.",
     categories: {
       features: "New Features",
       improvements: "Improvements",
@@ -303,323 +299,65 @@ export const en: LandingDict = {
         ],
       },
       {
-        version: "0.1.33",
+        version: "0.1.35-zc.1",
         date: "2026-04-14",
-        title: "Gemini CLI & Agent Env Vars",
+        title: "Upstream Rebase & Dependency Fix",
         changes: [],
         features: [
-          "Google Gemini CLI as a new agent runtime with live log streaming",
-          "Custom environment variables for agents (router/proxy mode) with dedicated settings tab",
-          "\"Set parent issue\" and \"Add sub-issue\" actions in issue context menu",
-          "CLI `--parent` flag for issue update and `--content-stdin` for piping comment content",
-          "Sub-issues inherit parent project automatically",
+          "Auto-enqueue agent tasks when blockers resolve (dependency graph integration)",
+          "Invitation flow with email notifications and dedicated /invite/{id} page (from upstream)",
+          "Google OAuth ?next= redirect fix (from upstream)",
+          "WebSocket ping/pong heartbeat for dead connection detection (from upstream)",
+          "Desktop daemon management panel (from upstream)",
         ],
         improvements: [
-          "Editor bubble menu and link preview rewritten for reliability",
-          "OpenClaw backend P0+P1 improvements (multi-line JSON, incremental parsing)",
-          "Self-hosted WebSocket URL auto-derived for LAN access",
+          "Update check points at zachcampbell/multica releases with correct version suffix parsing",
+          "Landing page customized for fork",
+          "Systemd unit changed to Restart=always for daemon self-update survival",
         ],
         fixes: [
-          "S3 upload keys scoped by workspace (security)",
-          "Workspace membership validation for subscriptions and uploads (security)",
-          "Active tasks auto-cancelled when issue status changes to cancelled",
-          "Agent task stall when process hangs on stdout",
-          "Daemon trigger prompt now embeds the actual triggering comment content",
-          "Login and dashboard redirect stability improvements",
+          "Upstream invitation email adapted to SMTP/Resend pattern",
         ],
       },
       {
-        version: "0.1.28",
-        date: "2026-04-13",
-        title: "Windows Support, Auth & Onboarding",
-        changes: [],
-        features: [
-          "Windows support — CLI installation, daemon, and release builds",
-          "Auth migrated to HttpOnly Cookie with WebSocket Origin whitelist",
-          "Full-screen onboarding wizard for new workspaces",
-          "Resizable Master Agent chat window with session history improvements",
-          "Token usage log scanning for OpenCode, OpenClaw, and Hermes runtimes",
-        ],
-        fixes: [
-          "WebSocket first-message authentication security fix",
-          "Content-Security-Policy response header",
-          "Sub-issue progress computed from database instead of paginated client cache",
-        ],
-      },
-      {
-        version: "0.1.27",
+        version: "0.1.27-zc",
         date: "2026-04-12",
-        title: "One-Click Setup, Self-Hosting & Stability",
+        title: "Dependency Graph & Comments",
         changes: [],
         features: [
-          "One-click install & setup — `curl | bash` installs CLI, `--with-server` bootstraps full self-hosting, `multica setup` configures your environment",
-          "Self-hosted storage — local file fallback when S3 is unavailable, plus custom S3 endpoint support (MinIO)",
-          "Inline property editing (priority, status, lead) on project list page",
+          "Issue dependency graph \u2014 backend (blocks/blocked-by relationships, cycle detection, claim-time enforcement)",
+          "Issue dependency graph \u2014 frontend (DAG visualization, dependency management UI)",
+          "Auto-collapse long agent comments (> 500 chars) with expand toggle",
         ],
         improvements: [
-          "Stale agent tasks auto-swept; agent live card shows immediately without waiting for first message",
-          "Comment attachments uploaded via CLI now visible in the UI",
-          "Pinned items scoped per user with fixed sidebar pin action",
+          "Ollama backend uses ANTHROPIC_AUTH_TOKEN to bypass client-side key validation",
+          "CLAUDE_CODE_MAX_OUTPUT_TOKENS bumped to 65536 for agent sessions",
         ],
         fixes: [
-          "Workspace ownership checks on daemon API routes and attachment uploads",
-          "Markdown sanitizer preserves code blocks from HTML entity escaping",
-          "Next.js upgraded to ^16.2.3 for CVE-2026-23869",
-          "OpenClaw backend rewritten to match actual CLI interface",
+          "Test scripts removed from repo and gitignored",
         ],
       },
       {
-        version: "0.1.24",
-        date: "2026-04-11",
-        title: "Security & Notifications",
-        changes: [],
-        features: [
-          "Parent issue subscribers notified on sub-issue changes",
-          "CLI `--project` filter for issue list",
-        ],
-        improvements: [
-          "Meta-skill workflow defers to agent Skills instead of hardcoded logic",
-        ],
-        fixes: [
-          "Workspace ownership checks on all daemon API routes",
-          "Workspace ownership validation for attachment uploads and queries",
-          "Reply mentions no longer inherit parent thread's agent mentions",
-          "Agent comment creation missing workspace ID",
-          "Self-hosting Docker build failures (file permissions, CRLF, missing deps)",
-        ],
-      },
-      {
-        version: "0.1.23",
-        date: "2026-04-11",
-        title: "Pinning, Cmd+K & Projects",
-        changes: [],
-        features: [
-          "Pin issues and projects to sidebar with drag-and-drop reordering",
-          "Cmd+K command palette — recent issues, page navigation, and project search",
-          "Project detail sidebar with properties panel (replaces overview tab)",
-          "Project filter in Issues tab",
-          "Project completion progress in project list",
-          "Auto-fill project when creating issue via 'C' shortcut on project page",
-          "Assignee dropdown sorted by user's assignment frequency",
-        ],
-        fixes: [
-          "Markdown XSS — sanitize HTML rendering in comments with rehype-sanitize and server-side bluemonday",
-          "Project kanban issue counts incorrect",
-          "Self-hosting Docker build missing tsconfig dependencies",
-          "Cmd+K requiring double ESC to close",
-        ],
-      },
-      {
-        version: "0.1.22",
+        version: "0.1.22-zc.2",
         date: "2026-04-10",
-        title: "Self-Hosting, ACP & Documentation",
+        title: "Production Deployment & Agent Fleet",
         changes: [],
         features: [
-          "Full-stack Docker Compose for one-command self-hosting",
-          "Hermes Agent Provider via ACP protocol",
-          "Documentation site with Fumadocs (Getting Started, CLI reference, Agents guide)",
-          "Mobile-responsive sidebar and inbox layout",
-          "Token usage display per issue in the detail sidebar",
-          "Switch agent runtime from the UI",
-          "'C' keyboard shortcut for quick issue creation",
-          "Chat session history panel for archived conversations",
-          "Minimum CLI version check in daemon for Claude Code and Codex",
-          "OpenClaw and OpenCode added to landing page",
-          "`make dev` one-command local development setup",
+          "Docker Compose + systemd deployment for self-hosted instances",
+          "SMTP email backend for verification codes (internal MTA support)",
+          "Per-agent model selection with Ollama model discovery (42 models)",
+          "MinIO integration for self-hosted file uploads",
+          "Ollama/LiteLLM proxy backend for free model inference",
         ],
         improvements: [
-          "Sidebar redesign — Personal / Workspace grouping, user profile footer, ⌘K search input",
-          "Search ranking — case-insensitive matching, identifier search (MUL-123), multi-word support",
-          "Search result keyword highlighting",
-          "Daily token usage chart with cleaner Y-axis and per-category tooltip",
-          "Master Agent multiline input support",
-          "Unified picker components (Status, Priority, DueDate, Project, Assignee) across all views",
-          "Workspace-scoped storage isolation with auto-rehydration on switch",
-          "Startup warnings for missing env vars in self-hosted deployments",
+          "WebSocket URL auto-derived from page origin (no build-time env vars)",
+          "CLI update command points at zachcampbell/multica fork",
+          "Daemon setup guide for Mac/Linux with launchd and systemd instructions",
         ],
         fixes: [
-          "Sub-issue deletion not invalidating parent's children cache",
-          "Search index compatibility with pg_bigm 1.2 on RDS",
-          "Create Agent showing \"No runtime available\" when runtimes exist",
-          "Claude stream-json startup hangs",
-          "Multiple agents unable to queue tasks for the same issue",
-          "Logout not clearing workspace and query cache",
-          "Drag-drop overlay too small on empty editors",
-          "Skills import hardcoding \"main\" as default branch",
-          "PAT authentication not working on WebSocket endpoint",
-          "Runtime deletion blocked when all bound agents are archived",
-        ],
-      },
-      {
-        version: "0.1.21",
-        date: "2026-04-09",
-        title: "Projects, Search & Monorepo",
-        changes: [
-          "Project entity with full-stack CRUD — create, edit, and organize issues by project",
-          "Project picker in the create-issue modal and CLI project commands",
-          "Full-text search for issues with pg_bigm",
-          "Monorepo extraction — shared packages for core, UI, and views (Turborepo)",
-          "Fullscreen agent execution transcript view",
-          "Drag-and-drop file upload with file card display in the editor",
-          "Attachment section with image grid and file cards on issues",
-          "Runtime owner tracking, filtering, avatar display, and point-to-point update notifications",
-          "Sub-issue progress indicator in list view rows",
-          "Done issue pagination in list view",
-          "Codex session log scan for token usage reporting",
-          "Daemon repo-cache fix for stale initial snapshots",
-        ],
-      },
-      {
-        version: "0.1.20",
-        date: "2026-04-08",
-        title: "Sub-Issues, TanStack Query & Usage Tracking",
-        changes: [
-          "Sub-issue support — create, view, and manage child issues within any issue",
-          "Full migration to TanStack Query for server state (issues, inbox, workspace, runtimes)",
-          "Per-task token usage tracking across all agent providers",
-          "Multiple agents can now run concurrently on the same issue",
-          "Board view: Done column shows total count with infinite scroll",
-          "ReadonlyContent component for lightweight Markdown display in comments",
-          "Optimistic UI updates for reactions and mutations with rollback",
-          "WebSocket-driven cache invalidation replaces polling and refetch-on-focus",
-          "Browser session persists during CLI login flow",
-          "Daemon reuses existing worktrees by updating to latest remote",
-          "Fixed slow tab switching caused by dynamic root layout",
-        ],
-      },
-      {
-        version: "0.1.18",
-        date: "2026-04-07",
-        title: "OAuth, OpenClaw & Issue Loading",
-        changes: [
-          "Google OAuth login",
-          "OpenClaw runtime support for running agents on OpenClaw infrastructure",
-          "Redesigned agent live card — always sticky with manual expand/collapse toggle",
-          "Load all open issues without pagination limit; closed issues paginate on scroll",
-          "JWT and CloudFront cookie expiration extended from 72 hours to 30 days",
-          "Remember last selected workspace after re-login",
-          "Daemon ensures multica CLI is on PATH in agent task environment",
-          "PR template and CLI install guide for agent-driven setup",
-        ],
-      },
-      {
-        version: "0.1.17",
-        date: "2026-04-05",
-        title: "Comment Pagination & CLI Polish",
-        changes: [
-          "Comment list pagination in both the API and CLI",
-          "Inbox archive now dismisses all items for the same issue at once",
-          "CLI help output overhauled to match gh CLI style with examples",
-          "Attachments use UUIDv7 as S3 key and auto-link on issue/comment creation",
-          "@mention assigned agents on done or cancelled issues",
-          "Reply @mention inheritance skips when the reply only mentions members",
-          "Worktree setup preserves existing .env.worktree variables",
-        ],
-      },
-      {
-        version: "0.1.15",
-        date: "2026-04-03",
-        title: "Editor Overhaul & Agent Lifecycle",
-        changes: [
-          "Unified Tiptap editor with a single Markdown pipeline for editing and display",
-          "Reliable Markdown paste, inline code spacing, and link styling",
-          "Agent archive and restore — soft delete replaces hard delete",
-          "Archived agents hidden from default agent list",
-          "Skeleton loading states, error toasts, and confirmation dialogs across the app",
-          "OpenCode added as a supported agent provider",
-          "Reply-triggered agent tasks now inherit thread-root @mentions",
-          "Granular real-time event handling for issues and inbox — no more full refetches",
-          "Unified image upload flow for paste and button in the editor",
-        ],
-      },
-      {
-        version: "0.1.14",
-        date: "2026-04-02",
-        title: "Mentions & Permissions",
-        changes: [
-          "@mention issues in comments with server-side auto-expansion",
-          "@all mention to notify every workspace member",
-          "Inbox auto-scrolls to the referenced comment from a notification",
-          "Repositories extracted into a standalone settings tab",
-          "CLI update support from the web runtime page and direct download for non-Homebrew installs",
-          "CLI commands for viewing issue execution runs and run messages",
-          "Agent permission model — owners and admins manage agents, members manage skills on their own agents",
-          "Per-issue serial execution to prevent concurrent task collisions",
-          "File upload now supports all file types",
-          "README redesign with quickstart guide",
-        ],
-      },
-      {
-        version: "0.1.13",
-        date: "2026-04-01",
-        title: "My Issues & i18n",
-        changes: [
-          "My Issues page with kanban board, list view, and scope tabs",
-          "Simplified Chinese localization for the landing page",
-          "About and Changelog pages for the marketing site",
-          "Agent avatar upload in settings",
-          "Attachment support for CLI comments and issue/comment APIs",
-          "Unified avatar rendering with ActorAvatar across all pickers",
-          "SEO optimization and auth flow improvements for landing pages",
-          "CLI defaults to production API URLs",
-          "License changed to Apache 2.0",
-        ],
-      },
-      {
-        version: "0.1.3",
-        date: "2026-03-31",
-        title: "Agent Intelligence",
-        changes: [
-          "Trigger agents via @mention in comments",
-          "Stream live agent output to issue detail page",
-          "Rich text editor \u2014 mentions, link paste, emoji reactions, collapsible threads",
-          "File upload with S3 + CloudFront signed URLs and attachment tracking",
-          "Agent-driven repo checkout with bare clone cache for task isolation",
-          "Batch operations for issue list view",
-          "Daemon authentication and security hardening",
-        ],
-      },
-      {
-        version: "0.1.2",
-        date: "2026-03-28",
-        title: "Collaboration",
-        changes: [
-          "Email verification login and browser-based CLI auth",
-          "Multi-workspace daemon with hot-reload",
-          "Runtime dashboard with usage charts and activity heatmaps",
-          "Subscriber-driven notification model replacing hardcoded triggers",
-          "Unified activity timeline with threaded comment replies",
-          "Kanban board redesign with drag sorting, filters, and display settings",
-          "Human-readable issue identifiers (e.g. JIA-1)",
-          "Skill import from ClawHub and Skills.sh",
-        ],
-      },
-      {
-        version: "0.1.1",
-        date: "2026-03-25",
-        title: "Core Platform",
-        changes: [
-          "Multi-workspace switching and creation",
-          "Agent management UI with skills",
-          "Unified agent SDK supporting Claude Code and Codex backends",
-          "Comment CRUD with real-time WebSocket updates",
-          "Task service layer and daemon REST protocol",
-          "Event bus with workspace-scoped WebSocket isolation",
-          "Inbox notifications with unread badge and archive",
-          "CLI with cobra subcommands for workspace and issue management",
-        ],
-      },
-      {
-        version: "0.1.0",
-        date: "2026-03-22",
-        title: "Foundation",
-        changes: [
-          "Go backend with REST API, JWT auth, and real-time WebSocket",
-          "Next.js frontend with Linear-inspired UI",
-          "Issues with board and list views and drag-and-drop kanban",
-          "Agents, Inbox, and Settings pages",
-          "One-click setup, migration CLI, and seed tool",
-          "Comprehensive test suite \u2014 Go unit/integration, Vitest, Playwright E2E",
+          "Configurable postgres port for multi-instance deployments",
+          "crypto.randomUUID fallback for non-secure contexts",
+          "Plain SMTP dial for internal MTAs without STARTTLS",
         ],
       },
     ],
