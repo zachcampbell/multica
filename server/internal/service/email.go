@@ -120,26 +120,23 @@ func (s *EmailService) SendInvitationEmail(to, inviterName, workspaceName, invit
 	}
 	inviteURL := fmt.Sprintf("%s/invite/%s", appURL, invitationID)
 
-	if s.client == nil {
-		fmt.Printf("[DEV] Invitation email to %s: %s invited you to %s — %s\n", to, inviterName, workspaceName, inviteURL)
-		return nil
-	}
+	subject := fmt.Sprintf("%s invited you to %s on Multica", inviterName, workspaceName)
+	html := fmt.Sprintf(
+		`<div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+			<h2>You're invited to join %s</h2>
+			<p><strong>%s</strong> invited you to collaborate in the <strong>%s</strong> workspace on Multica.</p>
+			<p style="margin: 24px 0;">
+				<a href="%s" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 500;">Accept invitation</a>
+			</p>
+			<p style="color: #666; font-size: 14px;">You'll need to log in to accept or decline the invitation.</p>
+		</div>`, workspaceName, inviterName, workspaceName, inviteURL)
 
-	params := &resend.SendEmailRequest{
-		From:    s.fromEmail,
-		To:      []string{to},
-		Subject: fmt.Sprintf("%s invited you to %s on Multica", inviterName, workspaceName),
-		Html: fmt.Sprintf(
-			`<div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-				<h2>You're invited to join %s</h2>
-				<p><strong>%s</strong> invited you to collaborate in the <strong>%s</strong> workspace on Multica.</p>
-				<p style="margin: 24px 0;">
-					<a href="%s" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 500;">Accept invitation</a>
-				</p>
-				<p style="color: #666; font-size: 14px;">You'll need to log in to accept or decline the invitation.</p>
-			</div>`, workspaceName, inviterName, workspaceName, inviteURL),
+	if s.smtpHost != "" {
+		return s.sendSMTP(to, subject, html)
 	}
-
-	_, err := s.client.Emails.Send(params)
-	return err
+	if s.resendClient != nil {
+		return s.sendResend(to, subject, html)
+	}
+	fmt.Printf("[DEV] Invitation email to %s: %s invited you to %s — %s\n", to, inviterName, workspaceName, inviteURL)
+	return nil
 }
