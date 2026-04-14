@@ -5,7 +5,7 @@ import type { AgentRuntime } from "../types";
 import { runtimeListOptions, latestCliVersionOptions } from "./queries";
 
 function stripV(v: string): string {
-  return v.replace(/^v/, "");
+  return v.replace(/^v/, "").replace(/-.*$/, "");
 }
 
 function isNewer(latest: string, current: string): boolean {
