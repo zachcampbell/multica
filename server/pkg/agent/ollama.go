@@ -37,7 +37,7 @@ func (b *ollamaBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 
 	// Build the same args as claude backend, then add --setting-sources ""
 	// to prevent user's local settings.json from overriding the proxy target.
-	args := buildClaudeArgs(opts)
+	args := buildClaudeArgs(opts, b.cfg.Logger)
 	args = append(args, "--setting-sources", "")
 
 	cmd := exec.CommandContext(runCtx, execPath, args...)
