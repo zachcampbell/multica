@@ -523,8 +523,23 @@ func (d *Daemon) handlePing(ctx context.Context, rt Runtime, pingID string) {
 		return
 	}
 
+	// Ollama/LiteLLM proxy: pass host and API key so the backend can
+	// configure Claude CLI to use the proxy for inference. Without this
+	// the subprocess exports ANTHROPIC_BASE_URL="" and falls through to
+	// api.anthropic.com with bearer "ollama" → 401.
+	pingEnv := map[string]string{}
+	if rt.Provider == "ollama" {
+		if v := os.Getenv("MULTICA_OLLAMA_HOST"); v != "" {
+			pingEnv["OLLAMA_HOST"] = v
+		}
+		if v := os.Getenv("MULTICA_OLLAMA_API_KEY"); v != "" {
+			pingEnv["OLLAMA_API_KEY"] = v
+		}
+	}
+
 	backend, err := agent.New(rt.Provider, agent.Config{
 		ExecutablePath: entry.Path,
+		Env:            pingEnv,
 		Logger:         d.logger,
 	})
 	if err != nil {
@@ -540,6 +555,7 @@ func (d *Daemon) handlePing(ctx context.Context, rt Runtime, pingID string) {
 	defer cancel()
 
 	session, err := backend.Execute(pingCtx, "Respond with exactly one word: pong", agent.ExecOptions{
+		Model:    entry.Model,
 		MaxTurns: 1,
 		Timeout:  60 * time.Second,
 	})
