@@ -1,10 +1,11 @@
 // Package agent provides a unified interface for executing prompts via
-// coding agents (Claude Code, Codex, OpenCode, OpenClaw, Hermes, Ollama). It mirrors the happy-cli AgentBackend
-// pattern, translated to idiomatic Go.
+// coding agents (Claude Code, Codex, Copilot, OpenCode, OpenClaw, Hermes, Gemini, Pi, Cursor, Ollama).
+// It mirrors the happy-cli AgentBackend pattern, translated to idiomatic Go.
 package agent
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -25,8 +26,9 @@ type ExecOptions struct {
 	SystemPrompt    string
 	MaxTurns        int
 	Timeout         time.Duration
-	ResumeSessionID string   // if non-empty, resume a previous agent session
-	CustomArgs      []string // additional CLI arguments appended to the agent command
+	ResumeSessionID string          // if non-empty, resume a previous agent session
+	CustomArgs      []string        // additional CLI arguments appended to the agent command
+	McpConfig       json.RawMessage // if non-nil, MCP server config to pass via --mcp-config
 }
 
 // Session represents a running agent execution.
@@ -83,13 +85,13 @@ type Result struct {
 
 // Config configures a Backend instance.
 type Config struct {
-	ExecutablePath string            // path to CLI binary (claude, codex, opencode, openclaw, hermes, gemini, or claude for ollama)
+	ExecutablePath string            // path to CLI binary (claude for claude/ollama, codex, copilot, opencode, openclaw, hermes, gemini, pi, cursor-agent)
 	Env            map[string]string // extra environment variables
 	Logger         *slog.Logger
 }
 
 // New creates a Backend for the given agent type.
-// Supported types: "claude", "codex", "opencode", "openclaw", "hermes", "gemini", "ollama".
+// Supported types: "claude", "codex", "copilot", "opencode", "openclaw", "hermes", "gemini", "pi", "cursor", "ollama".
 func New(agentType string, cfg Config) (Backend, error) {
 	if cfg.Logger == nil {
 		cfg.Logger = slog.Default()
@@ -100,6 +102,8 @@ func New(agentType string, cfg Config) (Backend, error) {
 		return &claudeBackend{cfg: cfg}, nil
 	case "codex":
 		return &codexBackend{cfg: cfg}, nil
+	case "copilot":
+		return &copilotBackend{cfg: cfg}, nil
 	case "opencode":
 		return &opencodeBackend{cfg: cfg}, nil
 	case "openclaw":
@@ -108,6 +112,10 @@ func New(agentType string, cfg Config) (Backend, error) {
 		return &hermesBackend{cfg: cfg}, nil
 	case "gemini":
 		return &geminiBackend{cfg: cfg}, nil
+	case "pi":
+		return &piBackend{cfg: cfg}, nil
+	case "cursor":
+		return &cursorBackend{cfg: cfg}, nil
 	case "ollama":
 		return &ollamaBackend{
 			cfg:        cfg,
@@ -115,7 +123,7 @@ func New(agentType string, cfg Config) (Backend, error) {
 			apiKey:     cfg.Env["OLLAMA_API_KEY"],
 		}, nil
 	default:
-		return nil, fmt.Errorf("unknown agent type: %q (supported: claude, codex, opencode, openclaw, hermes, gemini, ollama)", agentType)
+		return nil, fmt.Errorf("unknown agent type: %q (supported: claude, codex, copilot, opencode, openclaw, hermes, gemini, pi, cursor, ollama)", agentType)
 	}
 }
 

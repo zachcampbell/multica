@@ -74,7 +74,7 @@ func (h *Handler) AddIssueDependency(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate the target issue exists in the same workspace.
-	workspaceID := resolveWorkspaceID(r)
+	workspaceID := h.resolveWorkspaceID(r)
 	targetIssue, err := h.Queries.GetIssueInWorkspace(r.Context(), db.GetIssueInWorkspaceParams{
 		ID:          parseUUID(req.DependsOnIssueID),
 		WorkspaceID: parseUUID(workspaceID),
@@ -188,7 +188,7 @@ func (h *Handler) RemoveIssueDependency(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	workspaceID := resolveWorkspaceID(r)
+	workspaceID := h.resolveWorkspaceID(r)
 	actorType, actorID := h.resolveActor(r, userID, workspaceID)
 	h.publish(protocol.EventDependencyDeleted, workspaceID, actorType, actorID, map[string]any{
 		"dependency": map[string]any{
@@ -221,7 +221,7 @@ func (h *Handler) ListIssueDependencies(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Look up workspace prefix for identifier formatting.
-	workspaceID := resolveWorkspaceID(r)
+	workspaceID := h.resolveWorkspaceID(r)
 	prefix := h.getIssuePrefix(r.Context(), parseUUID(workspaceID))
 
 	resp := make([]IssueDependencyResponse, 0, len(rows))
@@ -257,7 +257,7 @@ func (h *Handler) ListAssignableIssues(w http.ResponseWriter, r *http.Request) {
 	if _, ok := requireUserID(w, r); !ok {
 		return
 	}
-	workspaceID := resolveWorkspaceID(r)
+	workspaceID := h.resolveWorkspaceID(r)
 	if workspaceID == "" {
 		writeError(w, http.StatusBadRequest, "workspace_id is required")
 		return
@@ -323,7 +323,7 @@ func (h *Handler) GetDependencyGraph(w http.ResponseWriter, r *http.Request) {
 	if _, ok := requireUserID(w, r); !ok {
 		return
 	}
-	workspaceID := resolveWorkspaceID(r)
+	workspaceID := h.resolveWorkspaceID(r)
 	if workspaceID == "" {
 		writeError(w, http.StatusBadRequest, "workspace_id is required")
 		return

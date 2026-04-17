@@ -2,12 +2,20 @@ package service
 
 import (
 	"fmt"
+	"html"
 	"net/smtp"
 	"os"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/resend/resend-go/v2"
 )
+
+// maxSubjectFieldRunes bounds how much user-controlled text (workspace name,
+// inviter name) can land in an email Subject. Prevents attackers from stuffing
+// a full phishing pitch into a workspace name that gets sent from our domain.
+const maxSubjectFieldRunes = 60
 
 type EmailService struct {
 	resendClient *resend.Client
@@ -41,6 +49,10 @@ func NewEmailService() *EmailService {
 	return svc
 }
 
+// SendVerificationCode sends a one-time login code. The code is server-generated
+// (6-digit numeric) so no user-controlled text reaches the email body here.
+// If that ever changes, escape the user-controlled fields the same way
+// SendInvitationEmail does.
 func (s *EmailService) SendVerificationCode(to, code string) error {
 	html := fmt.Sprintf(
 		`<div style="font-family: sans-serif; max-width: 400px; margin: 0 auto;">
@@ -120,23 +132,63 @@ func (s *EmailService) SendInvitationEmail(to, inviterName, workspaceName, invit
 	}
 	inviteURL := fmt.Sprintf("%s/invite/%s", appURL, invitationID)
 
-	subject := fmt.Sprintf("%s invited you to %s on Multica", inviterName, workspaceName)
-	html := fmt.Sprintf(
-		`<div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-			<h2>You're invited to join %s</h2>
-			<p><strong>%s</strong> invited you to collaborate in the <strong>%s</strong> workspace on Multica.</p>
-			<p style="margin: 24px 0;">
-				<a href="%s" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 500;">Accept invitation</a>
-			</p>
-			<p style="color: #666; font-size: 14px;">You'll need to log in to accept or decline the invitation.</p>
-		</div>`, workspaceName, inviterName, workspaceName, inviteURL)
+	params := buildInvitationParams(s.fromEmail, to, inviterName, workspaceName, inviteURL)
 
 	if s.smtpHost != "" {
-		return s.sendSMTP(to, subject, html)
+		return s.sendSMTP(to, params.Subject, params.Html)
 	}
 	if s.resendClient != nil {
-		return s.sendResend(to, subject, html)
+		_, err := s.resendClient.Emails.Send(params)
+		return err
 	}
 	fmt.Printf("[DEV] Invitation email to %s: %s invited you to %s — %s\n", to, inviterName, workspaceName, inviteURL)
 	return nil
+}
+
+// buildInvitationParams assembles the email request for an invitation.
+// Separated so sanitization behavior is unit-testable without mocking the
+// Resend SDK, and shared by both SMTP and Resend transports.
+func buildInvitationParams(from, to, inviterName, workspaceName, inviteURL string) *resend.SendEmailRequest {
+	safeWorkspace := html.EscapeString(workspaceName)
+	safeInviter := html.EscapeString(inviterName)
+	subjectInviter := sanitizeSubjectField(inviterName)
+	subjectWorkspace := sanitizeSubjectField(workspaceName)
+
+	return &resend.SendEmailRequest{
+		From:    from,
+		To:      []string{to},
+		Subject: fmt.Sprintf("%s invited you to %s on Multica", subjectInviter, subjectWorkspace),
+		Html: fmt.Sprintf(
+			`<div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+				<h2>You're invited to join %s</h2>
+				<p><strong>%s</strong> invited you to collaborate in the <strong>%s</strong> workspace on Multica.</p>
+				<p style="margin: 24px 0;">
+					<a href="%s" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 500;">Accept invitation</a>
+				</p>
+				<p style="color: #666; font-size: 14px;">You'll need to log in to accept or decline the invitation.</p>
+			</div>`, safeWorkspace, safeInviter, safeWorkspace, inviteURL),
+	}
+}
+
+// sanitizeSubjectField prepares user-controlled text for the email Subject line.
+// Subject is not HTML-rendered, so HTML-escaping would leak literal entities
+// (e.g. &lt;script&gt;) into the recipient's inbox. Instead strip control
+// characters (defense in depth against header-injection-adjacent abuse) and
+// cap length so attackers can't stuff a full phishing subject into a
+// workspace name.
+func sanitizeSubjectField(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		if unicode.IsControl(r) {
+			continue
+		}
+		b.WriteRune(r)
+	}
+	cleaned := b.String()
+	if utf8.RuneCountInString(cleaned) <= maxSubjectFieldRunes {
+		return cleaned
+	}
+	runes := []rune(cleaned)
+	return string(runes[:maxSubjectFieldRunes-1]) + "…"
 }
