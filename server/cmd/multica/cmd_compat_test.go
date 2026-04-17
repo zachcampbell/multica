@@ -19,6 +19,16 @@ func TestLegacyCompatibilityCommandsRemainAvailable(t *testing.T) {
 		}
 	})
 
+	t.Run("workspace members list resolves to members subcommand", func(t *testing.T) {
+		c, _, err := workspaceCmd.Find([]string{"members", "list"})
+		if err != nil {
+			t.Fatalf("expected workspace members list command to exist: %v", err)
+		}
+		if c.Name() != "list" || c.Parent().Name() != "members" {
+			t.Fatalf("expected members→list, got %s→%s", c.Parent().Name(), c.Name())
+		}
+	})
+
 	t.Run("config show and set remain available", func(t *testing.T) {
 		if _, _, err := configCmd.Find([]string{"show"}); err != nil {
 			t.Fatalf("expected config show command to exist: %v", err)

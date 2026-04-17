@@ -38,13 +38,27 @@ var workspaceMembersCmd = &cobra.Command{
 	RunE:  runWorkspaceMembers,
 }
 
+// workspaceMembersListCmd accepts the "list" subcommand form
+// (`multica workspace members list`) that matches the verb+list pattern used
+// by every other resource. Without this, cobra parses "list" as the
+// workspace-id positional argument and the API returns 404 on
+// /api/workspaces/list/members.
+var workspaceMembersListCmd = &cobra.Command{
+	Use:   "list [workspace-id]",
+	Short: "List workspace members",
+	Args:  cobra.MaximumNArgs(1),
+	RunE:  runWorkspaceMembers,
+}
+
 func init() {
 	workspaceCmd.AddCommand(workspaceListCmd)
 	workspaceCmd.AddCommand(workspaceGetCmd)
 	workspaceCmd.AddCommand(workspaceMembersCmd)
+	workspaceMembersCmd.AddCommand(workspaceMembersListCmd)
 
 	workspaceGetCmd.Flags().String("output", "json", "Output format: table or json")
 	workspaceMembersCmd.Flags().String("output", "table", "Output format: table or json")
+	workspaceMembersListCmd.Flags().String("output", "table", "Output format: table or json")
 }
 
 func runWorkspaceList(cmd *cobra.Command, _ []string) error {
