@@ -35,16 +35,28 @@ async function fetchLatestVersion(): Promise<string | null> {
   }
 }
 
-function stripV(v: string): string {
-  return v.replace(/^v/, "").replace(/-.*$/, "");
+/**
+ * Parse a version tag into numeric components. Handles base semver plus
+ * the fork's `-zc.N` suffix by extracting N as a 4th component. Tags
+ * without a zc suffix are treated as zc=0, so a fork release like
+ * `v0.2.5-zc.1` is newer than the upstream base `v0.2.5` it patches.
+ * Additional suffixes like `-dirty` are ignored.
+ */
+function parseVersion(v: string): [number, number, number, number] {
+  const s = v.replace(/^v/, "");
+  const base = s.split("-", 1)[0] ?? "";
+  const [maj = 0, min = 0, pat = 0] = base.split(".").map(Number);
+  const zcMatch = s.match(/-zc\.(\d+)/);
+  const zc = zcMatch ? Number(zcMatch[1]) : 0;
+  return [maj, min, pat, zc];
 }
 
-function isNewer(latest: string, current: string): boolean {
-  const l = stripV(latest).split(".").map(Number);
-  const c = stripV(current).split(".").map(Number);
-  for (let i = 0; i < Math.max(l.length, c.length); i++) {
-    const lv = l[i] ?? 0;
-    const cv = c[i] ?? 0;
+export function isNewer(latest: string, current: string): boolean {
+  const l = parseVersion(latest);
+  const c = parseVersion(current);
+  for (let i = 0; i < l.length; i++) {
+    const lv = l[i] as number;
+    const cv = c[i] as number;
     if (lv > cv) return true;
     if (lv < cv) return false;
   }
