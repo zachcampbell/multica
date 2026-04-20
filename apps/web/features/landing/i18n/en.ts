@@ -276,6 +276,31 @@ export const en: LandingDict = {
     },
     entries: [
       {
+        version: "0.2.6",
+        date: "2026-04-19",
+        title: "Auth Hardening, Render Loop & Daemon Fixes",
+        changes: [],
+        features: [
+          "Issue title now shown in the detail page header",
+          "Custom args tab shows a launch mode preview for agent runtimes",
+        ],
+        improvements: [
+          "CLI accepts `workspace members list` as an alias for `workspace members`",
+          "Update check correctly handles `-zc.N` fork version suffixes when comparing releases",
+          "Self-host: `APP_ENV` propagated to backend container, defaulting to production",
+        ],
+        fixes: [
+          "Login and Google OAuth callback validate the `next=` redirect target to prevent open-redirect (security)",
+          "Sidebar and chat resize no longer trigger infinite re-render loops when the backend is unreachable",
+          "Daemon now propagates Ollama env and model overrides to the ping handler",
+          "Daemon populates `workspace_id` in `ClaimTaskByRuntime` for autopilot run-only tasks",
+          "Claude runtime clears stale session IDs on resume failure so the daemon fallback fires",
+          "Comment-triggered agent assignment uses the reply ID instead of the thread root",
+          "Autopilot run icon spins while a run is in progress",
+          "Dropped Codex-incompatible `--model` example from the custom args tab",
+        ],
+      },
+      {
         version: "0.2.5",
         date: "2026-04-17",
         title: "CLI Autopilot, Cmd+K & Daemon Identity",

@@ -280,6 +280,31 @@ export const zh: LandingDict = {
     },
     entries: [
       {
+        version: "0.2.6",
+        date: "2026-04-19",
+        title: "认证加固、渲染循环与 Daemon 修复",
+        changes: [],
+        features: [
+          "Issue 详情页顶部显示 Issue 标题",
+          "自定义参数标签页新增 Agent 运行时启动模式预览",
+        ],
+        improvements: [
+          "CLI 支持 `workspace members list` 作为 `workspace members` 的别名",
+          "版本比较正确处理 `-zc.N` 分叉版本后缀",
+          "自助托管：`APP_ENV` 传递到后端容器，默认 production",
+        ],
+        fixes: [
+          "登录和 Google OAuth 回调校验 `next=` 跳转目标，防止开放重定向（安全）",
+          "后端不可达时,侧边栏和聊天面板不再触发无限重新渲染循环",
+          "Daemon 将 Ollama 环境变量和模型覆盖传递到 ping 处理器",
+          "Daemon 在 `ClaimTaskByRuntime` 中为 autopilot run-only 任务填充 `workspace_id`",
+          "Claude 运行时在 resume 失败时清除过期的 session ID,以便 daemon 回退生效",
+          "评论触发的 Agent 指派使用回复 ID 而非线程根 ID",
+          "Autopilot 运行图标在运行过程中持续旋转",
+          "移除自定义参数标签页中 Codex 不支持的 `--model` 示例",
+        ],
+      },
+      {
         version: "0.2.5",
         date: "2026-04-17",
         title: "CLI Autopilot、Cmd+K 与 Daemon 身份",
