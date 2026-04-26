@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -226,7 +227,7 @@ func (h *Handler) ListIssueDependencies(w http.ResponseWriter, r *http.Request) 
 
 	resp := make([]IssueDependencyResponse, 0, len(rows))
 	for _, row := range rows {
-		identifier := formatIdentifier(prefix, row.RelatedIssueNumber)
+		identifier := prefix + "-" + strconv.Itoa(int(row.RelatedIssueNumber))
 		resp = append(resp, IssueDependencyResponse{
 			ID:               uuidToString(row.ID),
 			IssueID:          uuidToString(row.IssueID),

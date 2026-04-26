@@ -23,8 +23,8 @@ const (
 	DefaultHealthPort            = 19514
 	DefaultMaxConcurrentTasks    = 20
 	DefaultGCInterval            = 1 * time.Hour
-	DefaultGCTTL                 = 5 * 24 * time.Hour // 5 days
-	DefaultGCOrphanTTL           = 30 * 24 * time.Hour // 30 days
+	DefaultGCTTL                 = 24 * time.Hour     // 1 day — AI-coding issues rarely stay open long
+	DefaultGCOrphanTTL           = 72 * time.Hour     // 3 days — orphans with no meta (crashes, pre-GC leftovers)
 )
 
 // Config holds all daemon configuration.
@@ -37,15 +37,15 @@ type Config struct {
 	CLIVersion         string                // multica CLI version (e.g. "0.1.13")
 	LaunchedBy         string                // "desktop" when spawned by the Electron app, empty for standalone
 	Profile            string                // profile name (empty = default)
-	Agents             map[string]AgentEntry // keyed by provider: claude, codex, copilot, opencode, openclaw, hermes, gemini, pi, cursor, ollama
+	Agents             map[string]AgentEntry // keyed by provider: claude, codex, copilot, opencode, openclaw, hermes, gemini, pi, cursor, kimi, ollama
 	WorkspacesRoot     string                // base path for execution envs (default: ~/multica_workspaces)
 	KeepEnvAfterTask   bool                  // preserve env after task for debugging
 	HealthPort         int                   // local HTTP port for health checks (default: 19514)
 	MaxConcurrentTasks int                   // max tasks running in parallel (default: 20)
 	GCEnabled          bool                  // enable periodic workspace garbage collection (default: true)
 	GCInterval         time.Duration         // how often the GC loop runs (default: 1h)
-	GCTTL              time.Duration         // clean dirs whose issue is done/canceled and updated_at < now()-TTL (default: 5d)
-	GCOrphanTTL        time.Duration         // clean orphan dirs (no meta or unknown issue) older than this (default: 30d)
+	GCTTL              time.Duration         // clean dirs whose issue is done/canceled and updated_at < now()-TTL (default: 24h)
+	GCOrphanTTL        time.Duration         // clean orphan dirs with no meta older than this (default: 72h). Dirs whose issue returned 404 are cleaned immediately.
 	PollInterval       time.Duration
 	HeartbeatInterval  time.Duration
 	AgentTimeout       time.Duration
@@ -145,6 +145,13 @@ func LoadConfig(overrides Overrides) (Config, error) {
 			Model: strings.TrimSpace(os.Getenv("MULTICA_COPILOT_MODEL")),
 		}
 	}
+	kimiPath := envOrDefault("MULTICA_KIMI_PATH", "kimi")
+	if _, err := exec.LookPath(kimiPath); err == nil {
+		agents["kimi"] = AgentEntry{
+			Path:  kimiPath,
+			Model: strings.TrimSpace(os.Getenv("MULTICA_KIMI_MODEL")),
+		}
+	}
 	// Ollama/LiteLLM proxy: uses Claude CLI as the agent harness with a custom
 	// inference endpoint. Requires claude on PATH and MULTICA_OLLAMA_HOST set.
 	ollamaHost := strings.TrimSpace(os.Getenv("MULTICA_OLLAMA_HOST"))
@@ -162,7 +169,7 @@ func LoadConfig(overrides Overrides) (Config, error) {
 		}
 	}
 	if len(agents) == 0 {
-		return Config{}, fmt.Errorf("no agent CLI found: install claude, codex, copilot, opencode, openclaw, hermes, gemini, pi, cursor-agent, or set MULTICA_OLLAMA_HOST and ensure it is on PATH")
+		return Config{}, fmt.Errorf("no agent CLI found: install claude, codex, copilot, opencode, openclaw, hermes, gemini, pi, cursor-agent, or kimi; or set MULTICA_OLLAMA_HOST and ensure claude is on PATH")
 	}
 
 	// Host info

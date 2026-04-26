@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MulticaIcon } from "@multica/ui/components/common/multica-icon";
 import { cn } from "@multica/ui/lib/utils";
 import { useAuthStore } from "@multica/core/auth";
+import { captureDownloadIntent } from "@multica/core/analytics";
 import { GitHubMark, githubUrl } from "./shared";
 import { useLocale, locales, localeLabels } from "../i18n";
 
@@ -63,6 +64,11 @@ export function LandingFooter() {
                         {...(link.href.startsWith("http")
                           ? { target: "_blank", rel: "noreferrer" }
                           : {})}
+                        onClick={
+                          link.href === "/download"
+                            ? () => captureDownloadIntent("landing_footer")
+                            : undefined
+                        }
                         className="text-[14px] text-white/50 transition-colors hover:text-white"
                       >
                         {link.label}

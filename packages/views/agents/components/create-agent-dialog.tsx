@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Cloud, ChevronDown, Globe, Lock, Loader2 } from "lucide-react";
 import { ProviderLogo } from "../../runtimes/components/provider-logo";
 import { ActorAvatar } from "../../common/actor-avatar";
+import { ModelDropdown } from "./model-dropdown";
 import type {
   AgentVisibility,
   RuntimeDevice,
@@ -27,7 +28,6 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Input } from "@multica/ui/components/ui/input";
 import { Label } from "@multica/ui/components/ui/label";
 import { toast } from "sonner";
-import { ModelPicker } from "./model-picker";
 
 type RuntimeFilter = "mine" | "all";
 
@@ -91,7 +91,7 @@ export function CreateAgentDialog({
         description: description.trim(),
         runtime_id: selectedRuntime.id,
         visibility,
-        ...(model ? { runtime_config: { model } } : {}),
+        model: model.trim() || undefined,
       });
       onClose();
     } catch (err) {
@@ -280,10 +280,12 @@ export function CreateAgentDialog({
             </Popover>
           </div>
 
-          <ModelPicker
-            runtime={selectedRuntime}
+          <ModelDropdown
+            runtimeId={selectedRuntime?.id ?? null}
+            runtimeOnline={selectedRuntime?.status === "online"}
             value={model}
             onChange={setModel}
+            disabled={!selectedRuntime}
           />
         </div>
 
