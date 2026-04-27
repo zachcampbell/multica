@@ -87,6 +87,10 @@ func ListModels(ctx context.Context, providerType, executablePath string) ([]Mod
 		return cachedDiscovery(providerType, func() ([]Model, error) {
 			return discoverOpenclawAgents(ctx, executablePath)
 		})
+	case "ollama":
+		return cachedDiscovery(providerType, func() ([]Model, error) {
+			return discoverOllamaModels(ctx, executablePath)
+		})
 	default:
 		return nil, fmt.Errorf("unknown agent type: %q", providerType)
 	}

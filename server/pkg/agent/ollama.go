@@ -5,7 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"time"
 )
@@ -179,4 +182,75 @@ func (b *ollamaBackend) Execute(ctx context.Context, prompt string, opts ExecOpt
 	}()
 
 	return &Session{Messages: msgCh, Result: resCh}, nil
+}
+
+// discoverOllamaModels queries the configured Ollama/LiteLLM proxy
+// (MULTICA_OLLAMA_HOST + MULTICA_OLLAMA_API_KEY) for available models
+// and returns them as []Model. The model named in MULTICA_OLLAMA_MODEL
+// (default "kimi-k2.5") is marked Default so the UI can badge it.
+//
+// Unlike most discoverers in this package this one ignores the
+// executablePath argument: ollama models are catalogued by the proxy,
+// not by the local Claude CLI binary that ferries inference requests.
+func discoverOllamaModels(ctx context.Context, _ string) ([]Model, error) {
+	host := strings.TrimSpace(os.Getenv("MULTICA_OLLAMA_HOST"))
+	if host == "" {
+		return nil, fmt.Errorf("MULTICA_OLLAMA_HOST not set")
+	}
+	apiKey := strings.TrimSpace(os.Getenv("MULTICA_OLLAMA_API_KEY"))
+	defaultModel := strings.TrimSpace(os.Getenv("MULTICA_OLLAMA_MODEL"))
+	if defaultModel == "" {
+		defaultModel = "kimi-k2.5"
+	}
+
+	endpoint := strings.TrimRight(host, "/") + "/v1/models"
+	reqCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("build ollama models request: %w", err)
+	}
+	if apiKey != "" {
+		// The Anthropic-formatted key (sk-ant-api03-<real-key>) wraps the
+		// proxy's actual key. Strip the "ant-api03-" portion to recover the
+		// original proxy key (e.g. sk-ant-api03-sk-xxx → sk-xxx).
+		key := strings.Replace(apiKey, "ant-api03-", "", 1)
+		req.Header.Set("Authorization", "Bearer "+key)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("query ollama models: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("ollama models endpoint returned %d", resp.StatusCode)
+	}
+
+	var body struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("decode ollama models response: %w", err)
+	}
+
+	ids := make([]string, 0, len(body.Data))
+	for _, m := range body.Data {
+		if id := strings.TrimSpace(m.ID); id != "" {
+			ids = append(ids, id)
+		}
+	}
+	sort.Strings(ids)
+
+	models := make([]Model, 0, len(ids))
+	for _, id := range ids {
+		models = append(models, Model{
+			ID:       id,
+			Label:    id,
+			Provider: "ollama",
+			Default:  id == defaultModel,
+		})
+	}
+	return models, nil
 }
